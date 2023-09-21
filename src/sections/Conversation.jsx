@@ -7,14 +7,19 @@ import HistoryButton from "../components/HistoryButton";
 import { useState } from "react";
 
 function Conversation() {
+  var recording = true;
+  var processing = true;
+  var aiSpeaking = true;
+
   const [historyVisibility, setHistoryVisibility] = useState(false);
+
   const handleHistoryButton = () => {
     setHistoryVisibility((prev) => !prev);
   };
 
   return (
     <div className="max-container">
-      <Steps />
+      <Steps step1={recording} step2={processing} step3={aiSpeaking} />
       <InputOutputFields />
       <RecordingButton />
       <div className="max-md:hidden">
