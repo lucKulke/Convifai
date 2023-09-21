@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .mainNavBar {
+    @apply flex w-full justify-between p-5;
+  }
+
+  .navbarLink {
+    @apply my-3 text-slate-700 text-lg font-mono;
+  }
+
+  .dropdown {
+  }
+
+  .max-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+}
