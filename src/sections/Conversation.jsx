@@ -10,6 +10,8 @@ function Conversation() {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [aiSpeaking, setAiSpeaking] = useState(false);
+  const [userText, setUserText] = useState("User Text");
+  const [aiText, setAiText] = useState("AI Text");
 
   const [recordingStoped, setRecordingStoped] = useState(false);
 
@@ -63,7 +65,7 @@ function Conversation() {
   return (
     <div className="max-container">
       <Steps step1={recording} step2={processing} step3={aiSpeaking} />
-      <InputOutputFields />
+      <InputOutputFields userInput={userText} aiOutput={aiText} />
       <RecordingButton
         onMouseDown={startRecording}
         onMouseUp={stopRecording}
