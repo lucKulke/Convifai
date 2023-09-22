@@ -10,7 +10,7 @@ function App() {
     <main className="relative max-container">
       <Navbar />
       {/* <Conversation /> */}
-      <Login></Login>
+      <Conversation></Conversation>
     </main>
   );
 }
