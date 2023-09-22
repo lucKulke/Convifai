@@ -7,9 +7,9 @@ import HistoryButton from "../components/HistoryButton";
 import { useState } from "react";
 
 function Conversation() {
-  var recording = true;
-  var processing = true;
-  var aiSpeaking = true;
+  const [recording, setRecording] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [aiSpeaking, setAiSpeaking] = useState(false);
 
   const [historyVisibility, setHistoryVisibility] = useState(false);
 
