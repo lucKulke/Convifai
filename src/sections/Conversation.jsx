@@ -7,13 +7,30 @@ import HistoryButton from "../components/HistoryButton";
 import { useState } from "react";
 
 function Conversation() {
+  //test variables start
+  const history = [
+    {
+      user: "Hi how are you be",
+      interlocutor: "Hello im fine",
+      corrector: "Hi, how are you?",
+    },
+    {
+      user: "Lets talk about something interesting.",
+      interlocutor: "Ok lets talk about cars",
+      corrector: "Lets talk about something interesting.",
+    },
+  ];
+  //end
+
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [aiSpeaking, setAiSpeaking] = useState(false);
+  const [recordingStoped, setRecordingStoped] = useState(false);
+
   const [userText, setUserText] = useState("User Text");
   const [aiText, setAiText] = useState("AI Text");
 
-  const [recordingStoped, setRecordingStoped] = useState(false);
+  const [chatHistory, setChatHistory] = useState(history);
 
   const [mediaStream, setMediaStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -75,11 +92,11 @@ function Conversation() {
         disabled={recordingStoped}
       />
       <div className="max-md:hidden">
-        <ChatHistory />
+        <ChatHistory history={history} />
       </div>
       <div className="md:hidden">
         <HistoryButton onclick={handleHistoryButton} />
-        {historyVisibility && <ChatHistory />}
+        {historyVisibility && <ChatHistory history={history} />}
       </div>
     </div>
   );
