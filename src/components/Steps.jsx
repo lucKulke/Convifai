@@ -22,7 +22,7 @@ function Steps(props) {
     if (step2 && step3) {
       return "border-current";
     } else if (step2) {
-      return "animate-spin border-current";
+      return "animate-spin border-current text-warning";
     } else {
       return "fill-gray-200";
     }
@@ -32,7 +32,7 @@ function Steps(props) {
     <div class="mt m-10 flex justify-around items-center">
       <div
         class={`flex h-10 w-20 items-center justify-evenly rounded-xl border-2 ${
-          step1 ? "border-black" : "border-gray-200"
+          step1 ? "border-black shadow-md" : "border-gray-200"
         }  bg-white`}
       >
         <div class={`h-1/2 w-1/4 rounded-full ${handleStep1()}`}></div>
@@ -45,7 +45,7 @@ function Steps(props) {
       </div>
       <div
         class={`flex h-10 w-36 items-center justify-evenly rounded-xl border-2 ${
-          step2 ? "border-black" : "fill-gray-200"
+          step2 ? "border-black shadow-md" : "fill-gray-200"
         }`}
       >
         <div
@@ -56,7 +56,9 @@ function Steps(props) {
             Loading...
           </span>
         </div>
-        <h1 class={`text-xl ${step2 ? "" : "text-gray-200"}`}>Processing</h1>
+        <h1 class={`text-xl ml-1 ${step2 ? "" : "text-gray-200"}`}>
+          Processing
+        </h1>
       </div>
       <div>
         <HiArrowLongRight
@@ -66,8 +68,8 @@ function Steps(props) {
 
       <div>
         <FaAssistiveListeningSystems
-          className={`h-12 w-12  ${
-            step3 ? "animate-pulse" : " fill-gray-200 "
+          className={`h-12 w-12 ${
+            step3 ? "animate-pulse " : " fill-gray-200 "
           } `}
         />
       </div>
