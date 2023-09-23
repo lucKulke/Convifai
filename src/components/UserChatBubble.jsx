@@ -15,19 +15,18 @@ function UserChatBubble(props) {
   };
 
   return (
-    <div className="w-full flex justify-start mb-5">
+    <div className="max-w-full flex justify-start mb-5">
       <div className="w-10 h-10 rounded-full border-2 border-gray-300 mr-3 shadow-xl">
         <img className="p-2" src={UserPicture} alt="" />
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-2 w-3/4">
         <li>
           <button
             onClick={handleCorrectorChatBubble}
-            className="border-2 border-gray-300 rounded-2xl shadow-xl flex"
+            className="border-2 border-gray-300 rounded-2xl flex shadow-xl"
           >
-            <div className="p-3">
-              <p className="font-mono">{props.userText}</p>
-            </div>
+            <p className="font-mono text-left p-3">{props.userText}</p>
+
             <div className="relative">
               <InfoPing noticed={correctionNoticed}></InfoPing>
             </div>

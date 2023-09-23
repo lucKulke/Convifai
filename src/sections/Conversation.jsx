@@ -11,7 +11,7 @@ function Conversation() {
   const history = [
     {
       user: "Hi how are you be",
-      interlocutor: "Hello im fine",
+      interlocutor: "Hello im fine ",
       corrector: "Hi, how are you?",
     },
     {
