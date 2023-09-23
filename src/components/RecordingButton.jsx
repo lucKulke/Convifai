@@ -9,7 +9,7 @@ function RecordingButton(props) {
         onTouchStart={props.onTouchStart} // Handle touch events on mobile devices
         onTouchEnd={props.onTouchEnd}
         disabled={props.disabled}
-        className="bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-400 rounded-full h-20 w-20 flex items-center justify-center active:animate-pulse active:ring-8 active:ring-white active:ring-of"
+        className="bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-400 rounded-full h-20 w-20 flex items-center justify-center active:animate-pulse active:ring-8 active:ring-white shadow-xl"
       >
         <MdOutlineRecordVoiceOver className="h-8 w-8" />
       </button>
