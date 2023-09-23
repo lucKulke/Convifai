@@ -11,7 +11,7 @@ function Conversation() {
   const history = [
     {
       user: "Hi how are you be",
-      interlocutor: "Hello im fine",
+      interlocutor: "Hello im fine ",
       corrector: "Hi, how are you?",
     },
     {
@@ -79,6 +79,14 @@ function Conversation() {
     }
   };
 
+  const convertTextToVoice = (text) => {
+    console.log(text);
+  };
+
+  const handleListenToCorrection = (text) => {
+    convertTextToVoice(text);
+  };
+
   return (
     <div className="max-container">
       <Steps step1={recording} step2={processing} step3={aiSpeaking} />
@@ -91,12 +99,15 @@ function Conversation() {
         onTouchEnd={stopRecording}
         disabled={recordingStoped}
       />
-      <div className="max-md:hidden">
-        <ChatHistory history={history} />
-      </div>
-      <div className="md:hidden">
+
+      <div>
         <HistoryButton onclick={handleHistoryButton} />
-        {historyVisibility && <ChatHistory history={history} />}
+        {historyVisibility && (
+          <ChatHistory
+            listenToCorrection={handleListenToCorrection}
+            history={history}
+          />
+        )}
       </div>
     </div>
   );
