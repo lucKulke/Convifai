@@ -3,25 +3,27 @@ import { AiFillDelete } from "react-icons/ai";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { ImEnter } from "react-icons/im";
 
-export default function Card() {
+export default function Card(props) {
   return (
-    <div className="card w-96 bg-base-100 shadow-xl">
-      <figure>
-        <img src={robot} alt="Shoes" />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">Shoes!</h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
-        <div className="flex justify-between">
-          <button>
-            <ImEnter className="h-6 w-6" />
-          </button>
-          <button>
-            <HiOutlineRefresh className="h-6 w-6" />
-          </button>
-          <button>
-            <AiFillDelete className="h-6 w-6" />
-          </button>
+    <div className="flex justify-center">
+      <div className="card w-96 bg-base-100 shadow-xl">
+        <figure>
+          <img src={robot} alt="picture" />
+        </figure>
+        <div className="card-body">
+          <h2 className="card-title">{props.language}</h2>
+          <p className="mb-10">{props.title}</p>
+          <div className="flex justify-between">
+            <button>
+              <ImEnter className="h-6 w-6" />
+            </button>
+            <button>
+              <HiOutlineRefresh className="h-6 w-6" />
+            </button>
+            <button onClick={() => props.delete(props.id)}>
+              <AiFillDelete className="h-6 w-6" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
