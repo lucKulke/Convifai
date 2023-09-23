@@ -5,16 +5,13 @@ import { ImEnter } from "react-icons/im";
 
 export default function Card() {
   return (
-    <div className="flex justify-center items-center">
-      <div className="h-[400px] w-[300px] rounded-md border-2 bg-white p-3 shadow-xl ring-1 ring-slate-900/5 dark:bg-primary">
-        <div className="m-3 h-[200px] flex justify-center border-2 rounded-md">
-          <img src={robot} alt="image" className="object-fill h-47 w-98" />
-        </div>
-        <div className="m-3 h-[100px]">
-          <h1 className="m-3 mt-2 text-2xl text-slate-700 underline">
-            Hier steht ein title der sehr kurz ist.
-          </h1>
-        </div>
+    <div className="card w-96 bg-base-100 shadow-xl">
+      <figure>
+        <img src={robot} alt="Shoes" />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title">Shoes!</h2>
+        <p>If a dog chews shoes whose shoes does he choose?</p>
         <div className="flex justify-between">
           <button>
             <ImEnter className="h-6 w-6" />

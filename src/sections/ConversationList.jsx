@@ -9,8 +9,8 @@ function ConversationList() {
         <Card />
         <Card />
       </ul>
-      <div className="flex justify-center items-center">
-        <button className="bg-yellow-500 hover:bg-yellow-400 flex rounded-lg h-12 w-20 justify-center items-center">
+      <div className="flex justify-center items-center mb-10">
+        <button className="bg-yellow-500 hover:bg-yellow-400 flex active:bg-yellow-500 shadow-xl rounded-full h-16 w-16 justify-center items-center">
           <GrAdd className="h-10 w-10" />
         </button>
       </div>
