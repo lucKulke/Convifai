@@ -36,10 +36,10 @@ function Conversation() {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
 
-  const [historyVisibility, setHistoryVisibility] = useState(false);
+  const [historyVisible, sethistoryVisible] = useState(false);
 
   const handleHistoryButton = () => {
-    setHistoryVisibility((prev) => !prev);
+    sethistoryVisible((prev) => !prev);
   };
 
   const startRecording = async () => {
@@ -101,8 +101,11 @@ function Conversation() {
       />
 
       <div>
-        <HistoryButton onclick={handleHistoryButton} />
-        {historyVisibility && (
+        <HistoryButton
+          historyVisible={historyVisible}
+          onclick={handleHistoryButton}
+        />
+        {historyVisible && (
           <ChatHistory
             listenToCorrection={handleListenToCorrection}
             history={history}

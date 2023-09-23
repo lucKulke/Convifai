@@ -15,7 +15,7 @@ function UserChatBubble(props) {
   };
 
   return (
-    <div className="max-w-full flex justify-start mb-5">
+    <div className="max-w-full flex justify-start mt-4 mb-5">
       <div className="w-10 h-10 rounded-full border-2 border-gray-300 mr-3 shadow-xl">
         <img className="p-2" src={UserPicture} alt="" />
       </div>
