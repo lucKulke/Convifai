@@ -3,6 +3,7 @@ import { PiRobot } from "react-icons/pi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import Dropdown from "./Dropdown";
 import { navLinks } from "../constans";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   const [dropdown, setDropdown] = useState(false);
@@ -35,12 +36,14 @@ function Navbar() {
     <nav className="max-container">
       <div className="mainNavBar">
         <div className="flex w-[60px]">
-          <PiRobot className="h-12 w-12" />
+          <Link to="/">
+            <PiRobot className="h-12 w-12" />
+          </Link>
         </div>
         <ul className="flex justify-around w-full max-md:hidden">
           {navLinks.map((item) => (
             <li className="navbarLink" id={item.label}>
-              <a href={item.href}>{item.label}</a>
+              <Link to={item.href}>{item.label}</Link>
             </li>
           ))}
         </ul>

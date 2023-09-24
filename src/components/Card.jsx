@@ -2,7 +2,7 @@ import robot from "../assets/images/robot.png";
 import { AiFillDelete } from "react-icons/ai";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { ImEnter } from "react-icons/im";
-
+import { Link } from "react-router-dom";
 export default function Card(props) {
   return (
     <div className="flex justify-center">
@@ -15,9 +15,11 @@ export default function Card(props) {
           <p className="mb-10">{props.title}</p>
           <div className="flex justify-between">
             <div className="w-1/3  h-10 flex justify-start">
-              <button>
-                <ImEnter className="h-7 w-7 hover:w-8 hover:h-8" />
-              </button>
+              <Link to={`/conversation/${props.id}`}>
+                <button>
+                  <ImEnter className="h-7 w-7 hover:w-8 hover:h-8" />
+                </button>
+              </Link>
             </div>
             <div className="w-1/3 h-10 flex justify-center">
               <button>
