@@ -7,7 +7,7 @@ function SelectLanguage(props) {
   };
 
   return (
-    <div class="overflow-y-auto h-40 w-1/2 shadow-2xl rounded-lg ">
+    <div className="overflow-y-auto h-40 w-1/2 shadow-2xl rounded-lg ">
       <ul className="text-center space-y-3 pt-2">
         {props.languages.map((language) => (
           <li className="text-2xl font-mono">
