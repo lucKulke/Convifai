@@ -1,8 +1,23 @@
 import Card from "../components/Card";
 import AddNewConversationButton from "../components/AddNewConversationButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Alert from "../components/Alert";
 
 function ConversationList() {
+  const [alert, setAlert] = useState(false);
+  const [conversationsChanged, setConversationsChanged] = useState(null);
+
+  useEffect(() => {
+    if (conversationsChanged) {
+      setAlert(true);
+
+      setTimeout(() => {
+        setAlert(false);
+        setConversationsChanged(null);
+      }, 5000);
+    }
+  }, [conversationsChanged]);
+
   const languages = [
     "English",
     "Spain",
@@ -37,7 +52,7 @@ function ConversationList() {
     console.log(language);
   };
 
-  const addConversation = (language) => {
+  const addConversation = async (language) => {
     const newConversation = {
       title: "New Conversation",
       language: language,
@@ -45,12 +60,14 @@ function ConversationList() {
     };
     const newArray = [...conversations, newConversation];
     setConversations(newArray);
+    setConversationsChanged("created");
   };
 
   const deleteConversation = (id) => {
     console.log("in delete");
     const newArray = arrayRemoveElementById([...conversations], id);
     setConversations(newArray);
+    setConversationsChanged("deleted");
   };
 
   function getRandomInt(min, max) {
@@ -65,6 +82,16 @@ function ConversationList() {
 
   return (
     <section className="max-container">
+      <div
+        className={`${
+          alert ? "opacity-100 visible" : "opacity-0 invisible"
+        } transition-opacity duration-300 ease-in-out fixed top-0 z-50 w-3/4 p-4`}
+      >
+        <Alert
+          text={`Conversation was ${conversationsChanged} successfully!`}
+        ></Alert>
+      </div>
+
       <ul className="my-[150px] grid grid-cols-3 content-center gap-10 m-3 max-middle:grid-cols-2 max-sm:grid-cols-1">
         {conversations.map((conversation) => (
           <Card
