@@ -4,23 +4,23 @@ import Actions from "../components/Steps";
 import RecordingButton from "../components/RecordingButton";
 import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Conversation() {
-  //test variables start
-  const history = [
-    {
-      user: "Hi how are you be",
-      interlocutor: "Hello im fine ",
-      corrector: "Hi, how are you?",
-    },
-    {
-      user: "Lets talk about something interesting.",
-      interlocutor: "Ok lets talk about cars",
-      corrector: "Lets talk about something interesting.",
-    },
-  ];
-  //end
+  useEffect(() => {
+    setChatHistory([
+      {
+        user: "Hi how are you be",
+        interlocutor: "Hello im fine ",
+        corrector: "Hi, how are you?",
+      },
+      {
+        user: "Lets talk about something interesting.",
+        interlocutor: "Ok lets talk about cars",
+        corrector: "Lets talk about something interesting.",
+      },
+    ]);
+  }, []);
 
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -30,7 +30,7 @@ function Conversation() {
   const [userText, setUserText] = useState("User Text");
   const [aiText, setAiText] = useState("AI Text");
 
-  const [chatHistory, setChatHistory] = useState(history);
+  const [chatHistory, setChatHistory] = useState(null);
 
   const [mediaStream, setMediaStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -108,7 +108,7 @@ function Conversation() {
         {historyVisible && (
           <ChatHistory
             listenToCorrection={handleListenToCorrection}
-            history={history}
+            history={chatHistory}
           />
         )}
       </div>

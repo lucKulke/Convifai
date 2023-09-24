@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Login() {
+function Login(props) {
   const [inputValue, setInputValue] = useState(""); // State to hold the input value
 
   const handleInputChange = (event) => {
@@ -9,7 +9,7 @@ function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-    console.log("Submitted value:", inputValue);
+    props.setUser(inputValue);
   };
   return (
     <div className="h-screen flex justify-center mt-[200px]">
