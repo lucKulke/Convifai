@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response, session
+from flask import Blueprint, request, Response
 from .models import User
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -20,15 +20,15 @@ def login():
     username = data["username"]
     password = data["password"]
 
-    user = User.query.filter_by(username=data["username"]).first()
+    user = User.query.filter_by(username=username).first()
     if user:
         if check_password_hash(user.password, password):
             login_user(user, remember=True)
             return f"{user.username} with id: {user.id} logged in"
         else:
-            return "wrong password"
+            return Response("wrong password", status=406)
     else:
-        return "no such entry"
+        return Response("no such entry", status=406)
 
 
 @auth.route("/logout", methods=["POST"])
@@ -49,7 +49,7 @@ def sign_up():
     user = User.query.filter_by(username=username).first()
 
     if user:
-        return "you already have an account"
+        return Response("you already have an account", status=406)
     else:
         new_user = User(
             username=username,
