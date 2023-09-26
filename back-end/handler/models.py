@@ -13,6 +13,7 @@ class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     language = db.Column(db.String(150))
     title = db.Column(db.String(150))
+    picture = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     iterations = db.relationship("Iteration")
 
