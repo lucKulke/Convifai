@@ -5,21 +5,26 @@ import RecordingButton from "../components/RecordingButton";
 import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState } from "react";
+import DataProvider from "../functions/DataProvider";
+import { Navigate } from "react-router-dom";
 
-function Conversation() {
+function Conversation(props) {
   useEffect(() => {
-    setChatHistory([
-      {
-        user: "Hi how are you be",
-        interlocutor: "Hello im fine ",
-        corrector: "Hi, how are you?",
-      },
-      {
-        user: "Lets talk about something interesting.",
-        interlocutor: "Ok lets talk about cars",
-        corrector: "Lets talk about something interesting.",
-      },
-    ]);
+    if (props.loggedIn) {
+      console.log("logged in");
+      setChatHistory([
+        {
+          user: "Hi how are you be",
+          interlocutor: "Hello im fine ",
+          corrector: "Hi, how are you?",
+        },
+        {
+          user: "Lets talk about something interesting.",
+          interlocutor: "Ok lets talk about cars",
+          corrector: "Lets talk about something interesting.",
+        },
+      ]);
+    }
   }, []);
 
   const [recording, setRecording] = useState(false);
@@ -89,6 +94,7 @@ function Conversation() {
 
   return (
     <div className="max-container">
+      {!props.loggedIn && <Navigate to="/conversations" />}
       <Steps step1={recording} step2={processing} step3={aiSpeaking} />
       <InputOutputFields userInput={userText} aiOutput={aiText} />
       <RecordingButton

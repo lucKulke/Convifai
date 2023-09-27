@@ -16,35 +16,44 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/login", methods=["POST"])
 def login():
-    data = json.loads(request.data)
-    username = data["username"]
-    password = data["password"]
+    data = request.get_json()
+    print(data, flush=True)
+    username = data.get("username")
+    password = data.get("password")
+    print(password, flush=True)
 
     user = User.query.filter_by(username=username).first()
     if user:
         if check_password_hash(user.password, password):
             login_user(user, remember=True)
-            return f"{user.username} with id: {user.id} logged in"
+            return Response(status=201)
         else:
-            return Response("wrong password", status=406)
+            return Response("wrong password", status=423)
     else:
         return Response("no such entry", status=406)
+
+
+@auth.route("/login_status")
+def login_status():
+    if current_user.is_authenticated:
+        return Response("true", status=200)
+    else:
+        return Response("false", status=204)
 
 
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
-    username = current_user.username
     logout_user()
 
-    return f"{username} logged_out"
+    return Response("logged out", status=201)
 
 
 @auth.route("/sign_up", methods=["POST"])
 def sign_up():
-    data = json.loads(request.data)
-    username = data["username"]
-    password = data["password"]
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
 
     user = User.query.filter_by(username=username).first()
 
@@ -58,4 +67,4 @@ def sign_up():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return f"{username} you are signed up and logged in"
+        return Response("signed up", status=201)

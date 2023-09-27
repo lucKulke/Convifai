@@ -13,7 +13,7 @@ function Hero() {
             Learn new languages with Tandem ai!
           </p>
           <div className="max-md:flex max-md:justify-center">
-            <Link to="/conversations">
+            <Link to="/login">
               <button className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-semibold rounded-full ml-2 py-2 px-6 mt-6 transition duration-300">
                 Try it Out
               </button>

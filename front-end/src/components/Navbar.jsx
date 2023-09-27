@@ -4,8 +4,9 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import Dropdown from "./Dropdown";
 import { navLinks } from "../constans";
 import { Link } from "react-router-dom";
+import DataProvider from "../functions/DataProvider";
 
-function Navbar() {
+function Navbar(props) {
   const [dropdown, setDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [close, setClose] = useState(false);
@@ -28,6 +29,18 @@ function Navbar() {
     };
   }, []);
 
+  const handleLogout = () => {
+    DataProvider.logout()
+      .then((loggedIn) => {
+        if (loggedIn === true) {
+          props.setLoggedIn(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   const toggleDropdown = () => {
     close ? setClose(false) : setDropdown(true);
   };
@@ -46,6 +59,13 @@ function Navbar() {
               <Link to={item.href}>{item.label}</Link>
             </li>
           ))}
+          {props.loggedIn && (
+            <li className="navbarLink">
+              <Link to="/" onClick={() => handleLogout()}>
+                Logout
+              </Link>
+            </li>
+          )}
         </ul>
         <div className="md:hidden">
           <button onClick={toggleDropdown}>

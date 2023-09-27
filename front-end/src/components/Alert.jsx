@@ -8,7 +8,7 @@ function Alert(props) {
     return "alert-success";
   };
   return (
-    <div className={`fadeOut alert ${handleAlertType()} w-3/4`}>
+    <div className={`fadeOut alert ${handleAlertType()}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="stroke-current shrink-0 h-6 w-6"
