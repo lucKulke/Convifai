@@ -1,7 +1,14 @@
 from flask import Blueprint
 from flask_login import login_required
+from flask import jsonify
 
 ai = Blueprint("ai", __name__)
+
+
+@ai.route("/available_languages")
+@login_required
+def available_languages():
+    return jsonify(["English", "German"]), 200
 
 
 @ai.route("/voice_to_text")

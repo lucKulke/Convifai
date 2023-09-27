@@ -10,6 +10,7 @@ from flask_login import (
     login_required,
     current_user,
 )
+import uuid
 
 auth = Blueprint("auth", __name__)
 
@@ -61,6 +62,7 @@ def sign_up():
         return Response("you already have an account", status=406)
     else:
         new_user = User(
+            id=uuid.uuid4(),
             username=username,
             password=generate_password_hash(password=password, method="sha256"),
         )

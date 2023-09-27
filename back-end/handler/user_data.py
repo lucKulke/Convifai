@@ -5,6 +5,8 @@ from .models import Conversation
 import json
 import sys
 import time
+from flask import jsonify
+import uuid
 
 user_data = Blueprint("user_data", __name__)
 
@@ -20,20 +22,23 @@ def conversation():
 def conversations():
     user_id = current_user.id
     conversations = Conversation.query.filter_by(user_id=user_id).all()
-    response = dict()
+    response = []
 
-    index = 1
     for conversation in conversations:
-        response[index] = {
-            "id": conversation.id,
-            "language": conversation.language,
-            "title": conversation.title,
-            "picture": conversation.picture,
-        }
-        index += 1
+        response.append(
+            {
+                "id": conversation.id,
+                "language": conversation.language,
+                "title": conversation.title,
+                "picture": conversation.picture,
+            }
+        )
 
     print(response, flush=True)
-    return response
+    if not response:
+        return jsonify({}), 201
+    else:
+        return jsonify(response), 200
 
 
 @user_data.route("/conversations/add", methods=["POST"])
@@ -45,24 +50,31 @@ def conversation_add():
     title = data["title"]
     picture = data["picture"]
 
-    db.session.add(
-        Conversation(language=language, title=title, picture=picture, user_id=user_id)
+    new_conversation = Conversation(
+        id=uuid.uuid4(),
+        language=language,
+        title=title,
+        picture=picture,
+        user_id=user_id,
     )
+    db.session.add(new_conversation)
     db.session.commit()
-    return "conversation added"
+    return jsonify({"id": str(new_conversation.id)}), 201
 
 
 @user_data.route("/conversations/delete", methods=["POST"])
 @login_required
 def conversation_delete():
-    data = request.form
-    conversation_id = data.get("conversation_id")
+    data = json.loads(request.data)
+    conversation_id = data.get("id")
     conversation_to_delete = Conversation.query.get(conversation_id)
 
     if conversation_to_delete:
         db.session.delete(conversation_to_delete)
         db.session.commit()
-        return Response(f"Conversation with ID {conversation_id} was deleted!")
+        return Response(
+            f"Conversation with ID {conversation_id} was deleted!", status=201
+        )
     else:
         return Response(f"Conversation with ID {conversation_id} not found", status=404)
 

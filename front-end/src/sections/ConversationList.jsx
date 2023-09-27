@@ -8,8 +8,21 @@ import { Navigate } from "react-router-dom";
 function ConversationList(props) {
   useEffect(() => {
     if (props.loggedIn) {
-      setConversations(DataProvider.fetch_conversation_data());
-      setLanguages(DataProvider.fetch_available_languages());
+      DataProvider.fetch_conversation_data()
+        .then((data) => {
+          setConversations(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      DataProvider.fetch_available_languages()
+        .then((data) => {
+          setLanguages(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
   }, []);
 
@@ -35,20 +48,41 @@ function ConversationList(props) {
   };
 
   const addConversation = (language) => {
-    const newConversation = {
-      title: "New Conversation",
-      language: language,
-      id: getRandomInt(1, 1000),
-    };
-    const newArray = [...conversations, newConversation];
-    setConversations(newArray);
-    setConversationsChanged("created");
+    const title = "New Conversation";
+    const picture = "/images/robot.png";
+    DataProvider.create_conversation(language, title, picture)
+      .then((id) => {
+        const newConversation = {
+          language: language,
+          title: title,
+          picture: picture,
+          id: id,
+        };
+        const newArray = [...conversations, newConversation];
+        setConversations(newArray);
+        setConversationsChanged("created");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
-  const deleteConversation = (id) => {
-    const newArray = arrayRemoveElementById([...conversations], id);
-    setConversations(newArray);
-    setConversationsChanged("deleted");
+  const deleteConversation = (conversation_id) => {
+    DataProvider.delete_conversation(conversation_id)
+      .then((response) => {
+        if (response === true) {
+          console.log("delete");
+          const newArray = arrayRemoveElementById(
+            [...conversations],
+            conversation_id
+          );
+          setConversations(newArray);
+          setConversationsChanged("deleted");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   function getRandomInt(min, max) {
