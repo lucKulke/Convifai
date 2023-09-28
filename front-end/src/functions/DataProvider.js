@@ -94,29 +94,110 @@ class DataProvider {
     }
   }
 
-  static fetch_conversation_data() {
-    return [{ language: "English", title: "alle jahre wieder", id: "3" }];
-    fetch("/user_data/conversations")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        return;
+  static async fetch_conversation_data() {
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/user_data/conversations`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
       });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log(data);
+        return data;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
   }
 
-  static fetch_available_languages() {
-    return ["English", "Ruski", "German"];
-    fetch("/languages/available")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        return;
+  static async fetch_available_languages() {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/available_languages`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
       });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log(data);
+        return data;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
   }
 
-  static create_conversation() {}
+  static async create_conversation(language, title, picture) {
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/user_data/conversations/add`;
+    const requestData = {
+      language: language,
+      title: title,
+      picture: picture,
+    };
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+        credentials: "include",
+      });
 
-  static delete_conversation() {}
+      if (response.status === 201) {
+        const data = await response.json();
+        return data["id"];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async delete_conversation(conversation_id) {
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/user_data/conversations/delete`;
+    const requestData = { id: conversation_id };
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+        credentials: "include",
+      });
+
+      if (response.status === 201) {
+        return true;
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
 
   static update_conversation_title() {}
 

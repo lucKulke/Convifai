@@ -11,7 +11,6 @@ class Base(DeclarativeBase):
     pass
 
 
-DB_NAME = "database.db"
 db = SQLAlchemy(model_class=Base)
 
 
@@ -24,7 +23,9 @@ def create_app():
     )
     app.secret_key = os.getenv("SESSION_SECRET")
     app.config["SESSION_TYPE"] = "filesystem"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = f'mysql+pymysql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
 
     db.init_app(app)
 
@@ -47,6 +48,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return User.query.get(id)
 
     return app
