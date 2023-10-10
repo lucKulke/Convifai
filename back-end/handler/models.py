@@ -12,7 +12,6 @@ class User(UserMixin, db.Model):
     )
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
-    conversations = db.relationship("Conversation")
 
 
 class Conversation(db.Model):
@@ -25,19 +24,14 @@ class Conversation(db.Model):
     language = db.Column(db.String(150))
     title = db.Column(db.String(150))
     picture = db.Column(db.String(150))
-    user_id = db.Column(db.String(36), db.ForeignKey("user.id"))
-    iterations = db.relationship("Iteration")
+    user_id = db.Column(db.String(36))
 
 
 class Iteration(db.Model):
-    id = db.Column(
-        db.String(36),
-        primary_key=True,
-        unique=True,
-        nullable=False,
-    )
+    id = db.Column(db.String(36), primary_key=True, unique=True)
+    user_id = db.Column(db.String(36))
     user_audio_key = db.Column(db.String(500))
     voice_to_text = db.Column(db.String(500))
     interlocutor = db.Column(db.String(500))
     corrector = db.Column(db.String(500))
-    conversation_id = db.Column(db.String(36), db.ForeignKey("conversation.id"))
+    conversation_id = db.Column(db.String(36))
