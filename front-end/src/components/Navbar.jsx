@@ -75,7 +75,7 @@ function Navbar(props) {
       </div>
       {dropdown && (
         <div ref={dropdownRef}>
-          <Dropdown />
+          <Dropdown handleLogout={handleLogout} loggedIn={props.loggedIn} />
         </div>
       )}
     </nav>
