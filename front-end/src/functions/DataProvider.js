@@ -199,7 +199,7 @@ class DataProvider {
     }
   }
 
-  static async fetch_conversation(conversation_id){
+  static async fetch_conversation_data(conversation_id) {
     const apiUrl = `${
       import.meta.env.VITE_BACKEND_URI
     }/user_data/conversation/${conversation_id}`;
@@ -223,7 +223,6 @@ class DataProvider {
     } catch (error) {
       throw new Error(`Error fetching data: ${error.message}`);
     }
-
   }
 
   static update_conversation_title() {}
