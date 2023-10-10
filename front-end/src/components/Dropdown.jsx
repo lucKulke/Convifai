@@ -1,14 +1,22 @@
 import { navLinks } from "../constans";
+import { Link } from "react-router-dom";
 
-function Dropdown() {
+function Dropdown(props) {
   return (
     <div className="w-full bg-slate-100 p-5">
       <ul>
         {navLinks.map((item) => (
           <li className="navbarLink" id={item.label}>
-            <a href={item.href}>{item.label}</a>
+            <Link to={item.href}>{item.label}</Link>
           </li>
         ))}
+        {props.loggedIn && (
+          <li className="navbarLink">
+            <Link to="/" onClick={() => props.handleLogout()}>
+              Logout
+            </Link>
+          </li>
+        )}
       </ul>
     </div>
   );
