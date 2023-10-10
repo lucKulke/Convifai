@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response
 from flask_login import login_required, current_user
 from . import db
-from .models import Conversation
+from .models import Conversation, Iteration
 import json
 import sys
 import time
@@ -14,7 +14,25 @@ user_data = Blueprint("user_data", __name__)
 @user_data.route("/conversation/:id")
 @login_required
 def conversation():
-    return "conversation id"
+    data = json.loads(request.data)
+    conversation_id = data["conversation_id"]
+
+    iteration_data = Iteration.query.filter_by(conversation_id=conversation_id).all()
+    response = []
+
+    for iteration in iteration_data:
+        response.append(
+            {
+                "voice_to_text": iteration.voice_to_text,
+                "interlocutor": iteration.interlocutor,
+                "corrector": iteration.corrector,
+            }
+        )
+
+    if not response:
+        return jsonify([]), 201
+    else:
+        return jsonify(response), 200
 
 
 @user_data.route("/conversations")
@@ -36,7 +54,7 @@ def conversations():
 
     print(response, flush=True)
     if not response:
-        return jsonify({}), 201
+        return jsonify([]), 201
     else:
         return jsonify(response), 200
 
