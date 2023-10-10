@@ -11,22 +11,25 @@ import uuid
 user_data = Blueprint("user_data", __name__)
 
 
-@user_data.route("/conversation/:id")
+@user_data.route("/conversation/<string:id_>")
 @login_required
-def conversation():
-    data = json.loads(request.data)
-    conversation_id = data["conversation_id"]
+def conversation(id_):
+    user_id = current_user.id  # current_user.id
+    conversation_id = id_
 
-    iteration_data = Iteration.query.filter_by(conversation_id=conversation_id).all()
+    interations = Iteration.query.filter_by(
+        conversation_id=conversation_id, user_id=user_id
+    ).all()
+
     response = []
 
-    for iteration in iteration_data:
+    for iteration in interations:
         response.append(
             {
-                "voice_to_text": iteration.voice_to_text,
+                "user": iteration.voice_to_text,
                 "interlocutor": iteration.interlocutor,
-                "corrector": iteration.corrector,
-            }
+                "corrector": "iteration.corrector",
+            },
         )
 
     if not response:
