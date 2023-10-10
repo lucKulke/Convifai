@@ -47,12 +47,14 @@ function SignUp(props) {
     <>
       {props.loggedIn && <Navigate to="/conversations" />}
       {error && (
-        <div
-          className={`${
-            alert ? "opacity-100 visible" : "opacity-0 invisible"
-          } transition-opacity duration-300 ease-in-out fixed top-0 z-50 p-4`}
-        >
-          <Alert text={`Error,${error}`} type={"fail"}></Alert>
+        <div className="flex justify-center w-full">
+          <div
+            className={`${
+              alert ? "opacity-100 visible" : "opacity-0 invisible"
+            } transition-opacity duration-300 ease-in-out fixed top-0 z-50 p-4`}
+          >
+            <Alert text={`Error,${error}`} type={"fail"}></Alert>
+          </div>
         </div>
       )}
       <div className="h-screen flex justify-center mt-[200px]">
