@@ -6,27 +6,35 @@ import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 function Conversation(props) {
   useEffect(() => {
-    if (props.loggedIn) {
-      console.log("logged in");
-      setChatHistory([
-        {
-          user: "Hi how are you be",
-          interlocutor: "Hello im fine ",
-          corrector: "Hi, how are you?",
-        },
-        {
-          user: "Lets talk about something interesting.",
-          interlocutor: "Ok lets talk about cars",
-          corrector: "Lets talk about something interesting.",
-        },
-      ]);
-    }
+    DataProvider.check_login_status()
+      .then((loggedIn) => {
+        props.setLoggedIn(loggedIn);
+        setLoggedIn(loggedIn);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }, []);
 
+  useEffect(() => {
+    if (props.loggedIn == true) {
+      DataProvider.fetch_conversation_data(id)
+        .then((loggedIn) => {
+          props.setLoggedIn(loggedIn);
+          setLoggedIn(loggedIn);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  }, [loggedIn]);
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  const { id } = useParams();
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [aiSpeaking, setAiSpeaking] = useState(false);
@@ -93,32 +101,34 @@ function Conversation(props) {
   };
 
   return (
-    <div className="max-container">
-      {!props.loggedIn && <Navigate to="/conversations" />}
-      <Steps step1={recording} step2={processing} step3={aiSpeaking} />
-      <InputOutputFields userInput={userText} aiOutput={aiText} />
-      <RecordingButton
-        onMouseDown={startRecording}
-        onMouseUp={stopRecording}
-        onMouseLeave={stopRecording} // Handle release when the mouse leaves the button
-        onTouchStart={startRecording} // Handle touch events on mobile devices
-        onTouchEnd={stopRecording}
-        disabled={recordingStoped}
-      />
-
-      <div>
-        <HistoryButton
-          historyVisible={historyVisible}
-          onclick={handleHistoryButton}
+    <>
+      {!props.loggedIn && <Navigate to="/login" />}
+      <>
+        <Steps step1={recording} step2={processing} step3={aiSpeaking} />
+        <InputOutputFields userInput={userText} aiOutput={aiText} />
+        <RecordingButton
+          onMouseDown={startRecording}
+          onMouseUp={stopRecording}
+          onMouseLeave={stopRecording} // Handle release when the mouse leaves the button
+          onTouchStart={startRecording} // Handle touch events on mobile devices
+          onTouchEnd={stopRecording}
+          disabled={recordingStoped}
         />
-        {historyVisible && (
-          <ChatHistory
-            listenToCorrection={handleListenToCorrection}
-            history={chatHistory}
+
+        <div>
+          <HistoryButton
+            historyVisible={historyVisible}
+            onclick={handleHistoryButton}
           />
-        )}
-      </div>
-    </div>
+          {historyVisible && (
+            <ChatHistory
+              listenToCorrection={handleListenToCorrection}
+              history={chatHistory}
+            />
+          )}
+        </div>
+      </>
+    </>
   );
 }
 
