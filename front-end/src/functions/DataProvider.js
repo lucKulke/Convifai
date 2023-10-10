@@ -94,7 +94,7 @@ class DataProvider {
     }
   }
 
-  static async fetch_conversation_data() {
+  static async fetch_conversations_data() {
     const apiUrl = `${
       import.meta.env.VITE_BACKEND_URI
     }/user_data/conversations`;
@@ -197,6 +197,33 @@ class DataProvider {
     } catch (error) {
       throw new Error(`Error fetching data: ${error.message}`);
     }
+  }
+
+  static async fetch_conversation(conversation_id){
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/user_data/conversation/${conversation_id}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log(data);
+        return data;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+
   }
 
   static update_conversation_title() {}

@@ -8,7 +8,7 @@ import { Navigate } from "react-router-dom";
 function ConversationList(props) {
   useEffect(() => {
     if (props.loggedIn) {
-      DataProvider.fetch_conversation_data()
+      DataProvider.fetch_conversations_data()
         .then((data) => {
           setConversations(data);
         })
