@@ -5,7 +5,6 @@ function RecordingButton(props) {
       <button
         onMouseDown={props.onMouseDown}
         onMouseUp={props.onMouseUp}
-        onMouseLeave={props.onMouseLeave} // Handle release when the mouse leaves the button
         onTouchStart={props.onTouchStart} // Handle touch events on mobile devices
         onTouchEnd={props.onTouchEnd}
         disabled={props.disabled}
