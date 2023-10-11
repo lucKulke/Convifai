@@ -21,10 +21,13 @@ def conversation(id_):
         conversation_id=conversation_id, user_id=user_id
     ).all()
 
-    response = []
+    conversation = Conversation.query.filter_by(id=conversation_id).first()
+
+    response = {}
+    history = []
 
     for iteration in interations:
-        response.append(
+        history.append(
             {
                 "user": iteration.voice_to_text,
                 "interlocutor": iteration.interlocutor,
@@ -32,6 +35,8 @@ def conversation(id_):
             },
         )
 
+    response["history"] = history
+    response["language"] = conversation.language
     if not response:
         return jsonify([]), 201
     else:
