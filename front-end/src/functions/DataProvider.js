@@ -228,6 +228,114 @@ class DataProvider {
   static update_conversation_title() {}
 
   static update_conversation_picture() {}
+
+  static async text_to_voice(text, language) {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/text_to_voice`;
+    const requestData = { text: text, language: language };
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.status === 200) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        return audioUrl;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async voice_to_text(audioBlob) {
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/voice_to_text`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        body: audioBlob,
+        headers: {
+          "Content-Type": "audio/wav",
+        },
+      });
+
+      if (response.status === 200) {
+        const text = await response.text();
+        return text;
+      }
+      if (response.status === 201) {
+        return "example";
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async language_processing(textFromUser, id) {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/language_processing`;
+    const requestData = { text: textFromUser, conversation_id: id };
+    console.log(JSON.stringify(requestData));
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        return {
+          interlocutor: data.interlocutor.content,
+          corrector: data.corrector.content,
+        };
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async save_iteration_data(iterationData, conversation_id) {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/iteration_end`;
+    iterationData.conversation_id = conversation_id;
+    const requestData = iterationData;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(requestData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        console.log("data saved");
+        return true;
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
 }
 
 export default DataProvider;
