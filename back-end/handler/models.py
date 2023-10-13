@@ -35,3 +35,4 @@ class Iteration(db.Model):
     interlocutor = db.Column(db.String(500))
     corrector = db.Column(db.String(500))
     conversation_id = db.Column(db.String(36))
+    created_at = db.Column(db.DateTime)
