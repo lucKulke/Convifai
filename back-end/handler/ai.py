@@ -7,6 +7,8 @@ import asyncio
 from .models import Iteration
 import uuid
 from . import db
+import datetime
+from sqlalchemy import desc
 
 
 ai = Blueprint("ai", __name__)
@@ -16,11 +18,15 @@ api_server = os.getenv("AIHUB")
 @ai.route("/available_languages")
 @login_required
 def available_languages():
-    response = requests.get(f"http://{api_server}/text_to_voice/azure/available_voices")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return {"error": "Failed to fetch data from FastAPI"}
+    if request.method == "GET":
+        response = requests.get(
+            f"http://{api_server}/text_to_voice/azure/available_voices"
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"error": "Failed to fetch data from FastAPI"}
+    return "no get method"
 
 
 @ai.route("/iteration_end", methods=["POST", "OPTIONS"])
@@ -37,6 +43,7 @@ def save_iteration_data():
             interlocutor=data["interlocutor"],
             corrector=data["corrector"],
             conversation_id=data["conversation_id"],
+            created_at=datetime.datetime.now(),
         )
 
         db.session.add(new_iteration)
@@ -49,7 +56,9 @@ def save_iteration_data():
 @ai.route("/voice_to_text", methods=["POST"])
 @login_required
 def voice_to_text():
-    return "How tall is the tallest moutain in the world?"
+    if request.method == "POST":
+        return "Hey how are you?"
+    return "no post method"
 
 
 @ai.route("/text_to_voice", methods=["POST"])
@@ -86,46 +95,42 @@ def text_to_voice():
 @ai.route("/language_processing", methods=["POST"])
 def language_processing():
     if request.method == "POST":
-        user_id = "70eb0f89-2c17-4107-8106-7765625c0e69"  # current_user.user_id
+        user_id = current_user.id
         data = json.loads(request.data)
         text = data["text"]
         conversation_id = data["conversation_id"]
-
-        interations = Iteration.query.filter_by(
+        iterations = Iteration.query.filter_by(
             conversation_id=conversation_id, user_id=user_id
         ).all()
 
         interlocutor_sections = []
 
-        for iteration in interations:
-            interlocutor_sections.insert(
-                0,
-                {
-                    "role": "assistant",
-                    "content": iteration.interlocutor,
-                },
-            )
-            interlocutor_sections.insert(
-                0,
+        sorted_iterations = sorted(iterations, key=lambda x: x.created_at)
+
+        for iteration in sorted_iterations:
+            interlocutor_sections.append(
                 {
                     "role": "user",
-                    "content": iteration.voice_to_text,
+                    "content": f"{iteration.voice_to_text}",
+                },
+            )
+            interlocutor_sections.append(
+                {
+                    "role": "assistant",
+                    "content": f"{iteration.interlocutor}",
                 },
             )
 
-        interlocutor_sections.append({"role": "user", "content": text})
+        interlocutor_sections.append({"role": "user", "content": str(text)})
 
-        print(interlocutor_sections, flush=True)
-
-        response = api_request_language_processing(
-            text, [{"role": "user", "content": text}]
-        )
+        response = api_request_language_processing(text, interlocutor_sections)
         print(response, flush=True)
         return response, 200
     return "not a post method"
 
 
 def api_request_language_processing(text, interlocutor_sections):
+    print("only one request gpt!", flush=True)
     payload = {
         "instances": {
             "interlocutor": {
@@ -141,10 +146,13 @@ def api_request_language_processing(text, interlocutor_sections):
         "token": 100,
     }
 
+    payload = json.dumps(payload)
+    print(payload, flush=True)
     response = requests.post(
-        f"http://{api_server}/language_processing/chat_gpt", data=json.dumps(payload)
+        f"http://{api_server}/language_processing/chat_gpt",
+        headers={"Content-Type": "application/json"},
+        data=payload,
     )
-    print(response, flush=True)
     if response.status_code == 200:
         return response.json()
     else:
