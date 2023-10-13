@@ -97,6 +97,9 @@ function Conversation(props) {
       mediaRecorder.stop();
       setRecordingStoped(true);
       setRecording(false);
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      }
     }
   };
 
