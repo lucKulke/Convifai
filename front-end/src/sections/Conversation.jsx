@@ -62,24 +62,29 @@ function Conversation(props) {
   };
 
   const startRecording = async () => {
-    console.log("startRecording function");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setMediaStream(stream);
+
+      const audioChunks = [];
 
       const recorder = new MediaRecorder(stream);
       setMediaRecorder(recorder);
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
-          setAudioChunks([...audioChunks, e.data]);
+          audioChunks.push(e.data);
         }
       };
 
       recorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+        console.log("AudioBlob size: ", audioBlob.size);
+
         startIteration(audioBlob);
-        setAudioChunks([]);
+
+        audioChunks.length = 0;
       };
 
       recorder.start();
@@ -92,7 +97,7 @@ function Conversation(props) {
   };
 
   const stopRecording = () => {
-    if (mediaRecorder && recording) {
+    if (mediaRecorder) {
       console.log("stopRecording function");
       mediaRecorder.stop();
       setRecordingStoped(true);
@@ -104,6 +109,7 @@ function Conversation(props) {
   };
 
   const startIteration = async (audioBlob) => {
+    console.log("audio size", audioBlob.size);
     setProcessing(true);
     const textFromUser = await convertVoiceToText(audioBlob);
     setUserText(textFromUser);
