@@ -43,6 +43,12 @@ function Login(props) {
         console.error("Error:", error);
       });
   };
+
+  const handleButtonTouchStart = (event) => {
+    console.log("on touch");
+    event.preventDefault();
+    handleSubmit(event);
+  };
   return (
     <>
       {props.loggedIn && <Navigate to="/conversations" />}
@@ -58,7 +64,7 @@ function Login(props) {
         </div>
       )}
       <div className="h-screen flex justify-center mt-[200px]">
-        <div className="bg-white h-1/3 w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
+        <div className="bg-white h-[350px] w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
           <ul className="space-y-[20px]">
             <li className="">
               <h1 className="navbarLink flex justify-center">
@@ -89,6 +95,7 @@ function Login(props) {
                 <div className="flex mt-3 justify-center p-2">
                   <button
                     type="submit"
+                    onTouchStart={handleButtonTouchStart}
                     className="bg-yellow-500 active:bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-semibold rounded-full ml-2 py-2 px-6 mt-6 transition duration-300"
                   >
                     Submit
