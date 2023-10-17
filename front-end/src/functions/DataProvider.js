@@ -258,24 +258,19 @@ class DataProvider {
   }
 
   static async voice_to_text(audioBlob) {
-    const audioUrl = URL.createObjectURL(audioBlob);
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "audio.wav");
     const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/voice_to_text`;
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
         credentials: "include",
-        body: audioBlob,
-        headers: {
-          "Content-Type": "audio/wav",
-        },
+        body: formData,
       });
 
       if (response.status === 200) {
         const text = await response.text();
         return text;
-      }
-      if (response.status === 201) {
-        return "example";
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
