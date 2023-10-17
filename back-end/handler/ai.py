@@ -4,11 +4,10 @@ import requests
 import json
 import os
 import asyncio
-from .models import Iteration
+from .models import Iteration, Conversation
 import uuid
 from . import db
 import datetime
-from sqlalchemy import desc
 
 
 ai = Blueprint("ai", __name__)
@@ -29,11 +28,18 @@ def available_languages():
     return "no get method"
 
 
+@ai.route("/generate_picture")
+@login_required
+def generate_picture():
+    if request.method == "POST":
+        pass
+    return "no get method"
+
+
 @ai.route("/iteration_end", methods=["POST", "OPTIONS"])
 @login_required
 def save_iteration_data():
     if request.method == "POST":
-        user_id = current_user.id
         data = json.loads(request.data)
 
         new_iteration = Iteration(
@@ -47,6 +53,11 @@ def save_iteration_data():
         )
 
         db.session.add(new_iteration)
+
+        conversation = Conversation.query.filter_by(id=data["conversation_id"]).first()
+        if conversation:
+            conversation.changed = True
+
         db.session.commit()
 
         return "iteration data saved", 200
@@ -57,8 +68,37 @@ def save_iteration_data():
 @login_required
 def voice_to_text():
     if request.method == "POST":
-        return "Hey how are you?"
-    return "no post method"
+        try:
+            audio_file = request.files["audio"]
+            audio_file_size = os.fstat(audio_file.fileno()).st_size
+            if audio_file_size <= 0:
+                return "smaller than 0"
+
+            # Check if the 'audio' field exists in the form data
+            data = {
+                "model": "small",  # Example: You can add other form fields here
+            }
+
+            # Create a dictionary with the audio file field, using the field name specified by the API
+            files = {"audio_file": ("audio.wav", audio_file)}
+
+            # Make the POST request with form data
+            response = requests.post(
+                f"http://{api_server}/voice_to_text/whisper?only_text=true",
+                data=data,  # Your form fields
+                files=files,  # The audio file
+            )
+            if response.status_code == 200:
+                response_text = response.text[1:-1]
+                # Process the response as needed
+                return response_text
+            else:
+                # Handle the error response here
+                return f"HTTP error! Status: {response.status_code}"
+        except Exception as err:
+            print(f"error {err}")
+            return Response(content=f"error: {str(err)}", status_code=500)
+    return "no post method", 201
 
 
 @ai.route("/text_to_voice", methods=["POST"])
@@ -134,7 +174,7 @@ def api_request_language_processing(text, interlocutor_sections):
     payload = {
         "instances": {
             "interlocutor": {
-                "system_message": "Try to have a conversation with the user.",
+                "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Also Try to keep your answers short.",
                 "sections": interlocutor_sections,
             },
             "corrector": {
