@@ -29,14 +29,14 @@ function Steps(props) {
   };
 
   return (
-    <div class="mt m-10 flex justify-around items-center">
+    <div className="mt m-10 flex justify-around items-center">
       <div
-        class={`flex h-10 w-20 items-center justify-evenly rounded-xl border-2 ${
+        className={`flex h-10 w-20 items-center justify-evenly rounded-xl border-2 ${
           step1 ? "border-black shadow-md" : "border-gray-200"
         }  bg-white`}
       >
-        <div class={`h-1/2 w-1/4 rounded-full ${handleStep1()}`}></div>
-        <h1 class={`text-xl ${step1 ? "" : "text-gray-200"}`}>Rec</h1>
+        <div className={`h-1/2 w-1/4 rounded-full ${handleStep1()}`}></div>
+        <h1 className={`text-xl ${step1 ? "" : "text-gray-200"}`}>Rec</h1>
       </div>
       <div>
         <HiArrowLongRight
@@ -44,19 +44,19 @@ function Steps(props) {
         />
       </div>
       <div
-        class={`flex h-10 w-36 items-center justify-evenly rounded-xl border-2 ${
+        className={`flex h-10 w-36 items-center justify-evenly rounded-xl border-2 ${
           step2 ? "border-black shadow-md" : "fill-gray-200"
         }`}
       >
         <div
-          class={`inline-block h-6 w-6 ${handleStep2()} rounded-full border-4 border-solid border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]`}
+          className={`inline-block h-6 w-6 ${handleStep2()} rounded-full border-4 border-solid border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]`}
           role="status"
         >
-          <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
             Loading...
           </span>
         </div>
-        <h1 class={`text-xl ml-1 ${step2 ? "" : "text-gray-200"}`}>
+        <h1 className={`text-xl ml-1 ${step2 ? "" : "text-gray-200"}`}>
           Processing
         </h1>
       </div>
