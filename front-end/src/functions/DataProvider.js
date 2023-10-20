@@ -225,9 +225,65 @@ class DataProvider {
     }
   }
 
-  static update_conversation_title() {}
+  static async update_conversation_title(conversation_id) {
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai/summarise_conversation`;
+    const requestData = { conversation_id: conversation_id };
 
-  static update_conversation_picture() {}
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log(data.new_title);
+        return data.new_title;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async update_conversation_picture(conversation_id) {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/generate_image`;
+    const requestData = { conversation_id: conversation_id };
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log(data.picture_name);
+        return data.picture_name;
+      }
+      if (response.status === 201) {
+        return [];
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
 
   static async text_to_voice(text, language) {
     const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/text_to_voice`;

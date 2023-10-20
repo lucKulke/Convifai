@@ -28,14 +28,6 @@ def available_languages():
     return "no get method"
 
 
-@ai.route("/generate_picture")
-@login_required
-def generate_picture():
-    if request.method == "POST":
-        pass
-    return "no get method"
-
-
 @ai.route("/iteration_end", methods=["POST", "OPTIONS"])
 @login_required
 def save_iteration_data():
@@ -56,7 +48,8 @@ def save_iteration_data():
 
         conversation = Conversation.query.filter_by(id=data["conversation_id"]).first()
         if conversation:
-            conversation.changed = True
+            conversation.title_updateable = 1
+            conversation.picture_updateable = 1
 
         db.session.commit()
 
@@ -197,3 +190,131 @@ def api_request_language_processing(text, interlocutor_sections):
         return response.json()
     else:
         "error"
+
+
+@ai.route("/summarise_conversation", methods=["POST"])
+@login_required
+def summarise_conversation():
+    user_id = current_user.id
+    data = json.loads(request.data)
+    conversation_id = data["conversation_id"]
+    conversation = Conversation.query.filter_by(
+        id=conversation_id, user_id=user_id
+    ).first()
+    response = []
+
+    conversation.title = summarize_conversation(conversation.id, user_id)
+    conversation.title_updateable = 0
+
+    db.session.commit()
+    return {"new_title": conversation.title}
+
+
+def summarize_conversation(conversation_id, user_id):
+    iterations = Iteration.query.filter_by(
+        conversation_id=conversation_id, user_id=user_id
+    ).all()
+
+    sections = []
+
+    sorted_iterations = sorted(iterations, key=lambda x: x.created_at)
+
+    for iteration in sorted_iterations:
+        sections.append(
+            {
+                "role": "user",
+                "content": f"{iteration.voice_to_text}",
+            },
+        )
+        sections.append(
+            {
+                "role": "assistant",
+                "content": f"{iteration.interlocutor}",
+            },
+        )
+
+    response = request_language_processing(sections)
+    print(response, flush=True)
+    return response["summarizer"]["content"]
+
+
+def request_language_processing(sections):
+    payload = {
+        "instances": {
+            "summarizer": {
+                "system_message": "Please summarise the conversation to a title.",
+                "sections": sections,
+            }
+        },
+        "model": "gpt-3.5-turbo",
+        "token": 50,
+    }
+
+    payload = json.dumps(payload)
+    print(payload, flush=True)
+    response = requests.post(
+        f"http://{api_server}/language_processing/chat_gpt",
+        headers={"Content-Type": "application/json"},
+        data=payload,
+    )
+    if response.status_code == 200:
+        return response.json()
+    else:
+        "error"
+
+
+@ai.route("/generate_image", methods=["POST"])
+@login_required
+def generate_image_for_conversation():
+    if request.method == "POST":
+        user_id = current_user.id
+        data = json.loads(request.data)
+        conversation_id = data.get("conversation_id")
+        conversation = Conversation.query.get(conversation_id)
+
+        if conversation:
+            description = conversation.title
+
+            picture_name = generate_new_image(description)
+
+            # end
+
+            conversation.picture = picture_name
+            conversation.picture_updateable = 0
+            db.session.commit()
+
+            return {"picture_name": picture_name}
+        else:
+            return Response(
+                f"Conversation with ID {conversation_id} not found", status=404
+            )
+    return "no post method"
+
+
+def generate_new_image(description):
+    payload = {
+        "description": description + ", cartoon style",
+        "number_of_pictures": 1,
+        "size": "512x512",
+    }
+
+    response = requests.post(
+        f"http://{api_server}/image_generation/dalle",
+        headers={"Content-Type": "application/json"},
+        json=payload,
+    )
+
+    data = response.json()
+    print(data["url"], flush=True)
+
+    image_data = requests.get(data["url"])
+    picture_name = f"image_{uuid.uuid4()}.png"
+
+    relative_path = os.path.join("../back-end/img", picture_name)
+    # Convert to an absolute path
+    absolute_path = os.path.abspath(relative_path)
+
+    with open(absolute_path, "wb") as f:
+        f.write(image_data.content)
+
+    return picture_name  # picture_name

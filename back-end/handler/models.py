@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from . import db
 import uuid
+from sqlalchemy.dialects.mysql import TINYINT
 
 
 class User(UserMixin, db.Model):
@@ -24,6 +25,8 @@ class Conversation(db.Model):
     language = db.Column(db.String(150))
     title = db.Column(db.String(150))
     picture = db.Column(db.String(150))
+    picture_updateable = db.Column(TINYINT(unsigned=True))
+    title_updateable = db.Column(TINYINT(unsigned=True))
     user_id = db.Column(db.String(36))
 
 

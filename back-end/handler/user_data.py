@@ -7,6 +7,10 @@ import sys
 import time
 from flask import jsonify
 import uuid
+import requests
+import os
+
+api_server = os.getenv("AIHUB")
 
 user_data = Blueprint("user_data", __name__)
 
@@ -59,7 +63,9 @@ def conversations():
                     "id": conversation.id,
                     "language": conversation.language,
                     "title": conversation.title,
+                    "title_updateable": conversation.title_updateable,
                     "picture": conversation.picture,
+                    "picture_updateable": conversation.picture_updateable,
                 }
             )
 
@@ -108,57 +114,6 @@ def conversation_delete():
             return Response(
                 f"Conversation with ID {conversation_id} was deleted!", status=201
             )
-        else:
-            return Response(
-                f"Conversation with ID {conversation_id} not found", status=404
-            )
-    return "no post method"
-
-
-@user_data.route("/conversations/picture", methods=["POST"])
-@login_required
-def conversation_picture():
-    if request.method == "POST":
-        data = request.form
-        conversation_id = data.get("conversation_id")
-        conversation = Conversation.query.get(conversation_id)
-
-        if conversation:
-            text = conversation.title
-            # fetch new picture start
-            time.sleep(2)
-            picture = "/images/pic6.png"
-            # end
-
-            conversation.picture = picture
-            db.session.commit()
-
-            return Response(picture, mimetype="text")
-        else:
-            return Response(
-                f"Conversation with ID {conversation_id} not found", status=404
-            )
-    return "no post method"
-
-
-@user_data.route("/conversations/title", methods=["POST"])
-@login_required
-def conversation_title():
-    if request.method == "POST":
-        data = request.form
-        conversation_id = data.get("conversation_id")
-        conversation = Conversation.query.get(conversation_id)
-
-        if conversation:
-            # fetch new title start
-            time.sleep(2)
-            title = "new title"
-            # end
-
-            conversation.title = title
-            db.session.commit()
-
-            return Response(title, mimetype="text")
         else:
             return Response(
                 f"Conversation with ID {conversation_id} not found", status=404

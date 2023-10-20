@@ -27,20 +27,20 @@ function ConversationList(props) {
   }, []);
 
   const [alert, setAlert] = useState(false);
-  const [conversationsChanged, setConversationsChanged] = useState(null);
+  const [conversationListChanged, setConversationListChanged] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [languages, setLanguages] = useState([]);
 
   useEffect(() => {
-    if (conversationsChanged) {
+    if (conversationListChanged) {
       setAlert(true);
 
       setTimeout(() => {
         setAlert(false);
-        setConversationsChanged(null);
+        setConversationListChanged(null);
       }, 5000);
     }
-  }, [conversationsChanged]);
+  }, [conversationListChanged]);
 
   const handleSelectLanguage = (language) => {
     addConversation(language);
@@ -49,18 +49,20 @@ function ConversationList(props) {
 
   const addConversation = (language) => {
     const title = "New Conversation";
-    const picture = "/images/robot.png";
+    const picture = "robot.png";
     DataProvider.create_conversation(language, title, picture)
       .then((id) => {
         const newConversation = {
           language: language,
           title: title,
+          title_updateable: 0,
           picture: picture,
+          picture_updateable: 0,
           id: id,
         };
         const newArray = [...conversations, newConversation];
         setConversations(newArray);
-        setConversationsChanged("created");
+        setConversationListChanged("created");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -77,23 +79,32 @@ function ConversationList(props) {
             conversation_id
           );
           setConversations(newArray);
-          setConversationsChanged("deleted");
+          setConversationListChanged("deleted");
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-
-  function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
   function arrayRemoveElementById(arr, id) {
     return arr.filter(function (conversation) {
       return conversation.id != id;
     });
   }
+
+  const refreshConversationPicture = async (conversation_id) => {
+    const newUrl = await DataProvider.update_conversation_picture(
+      conversation_id
+    );
+    console.log("new url");
+    return newUrl;
+  };
+  const updateTitle = async (conversation_id) => {
+    const newTitle = await DataProvider.update_conversation_title(
+      conversation_id
+    );
+    return newTitle;
+  };
 
   return (
     <>
@@ -106,7 +117,7 @@ function ConversationList(props) {
             } transition-opacity duration-300 ease-in-out fixed top-0 z-50 p-4`}
           >
             <Alert
-              text={`Conversation was ${conversationsChanged} successfully!`}
+              text={`Conversation was ${conversationListChanged} successfully!`}
             ></Alert>
           </div>
         </div>
@@ -117,7 +128,12 @@ function ConversationList(props) {
               id={conversation.id}
               delete={deleteConversation}
               title={conversation.title}
+              title_updateable={conversation.title_updateable}
               language={conversation.language}
+              picture={conversation.picture}
+              picture_updateable={conversation.picture_updateable}
+              refreshPicture={refreshConversationPicture}
+              update_title={updateTitle}
             />
           ))}
           <AddNewConversationButton
