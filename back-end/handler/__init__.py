@@ -32,10 +32,12 @@ def create_app():
     from .ai import ai
     from .auth import auth
     from .user_data import user_data
+    from .images import images
 
     app.register_blueprint(ai, url_prefix="/ai")
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(user_data, url_prefix="/user_data")
+    app.register_blueprint(images, url_prefix="/images")
 
     from .models import User, Conversation, Iteration
 
