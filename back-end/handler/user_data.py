@@ -1,14 +1,13 @@
 from flask import Blueprint, request, Response
 from flask_login import login_required, current_user
 from . import db
-from .models import Conversation, Iteration
 import json
-import sys
-import time
+
 from flask import jsonify
 import uuid
 import requests
 import os
+from .crud import add_conversation, get_conversations, get_conversation, get_iterations
 
 api_server = os.getenv("AIHUB")
 
@@ -22,11 +21,9 @@ def conversation(id_):
         user_id = current_user.id  # current_user.id
         conversation_id = id_
 
-        interations = Iteration.query.filter_by(
-            conversation_id=conversation_id, user_id=user_id
-        ).all()
+        interations = get_iterations(conversation_id=conversation_id, user_id=user_id)
 
-        conversation = Conversation.query.filter_by(id=conversation_id).first()
+        conversation = get_conversation(conversation_id=conversation_id)
 
         response = {}
         history = []
@@ -54,7 +51,7 @@ def conversation(id_):
 def conversations():
     if request.method == "GET":
         user_id = current_user.id
-        conversations = Conversation.query.filter_by(user_id=user_id).all()
+        conversations = get_conversations(user_id=user_id)
         response = []
 
         for conversation in conversations:
@@ -87,14 +84,14 @@ def conversation_add():
         title = data["title"]
         picture = data["picture"]
 
-        new_conversation = Conversation(
+        new_conversation = add_conversation(
             id=uuid.uuid4(),
             language=language,
             title=title,
             picture=picture,
             user_id=user_id,
         )
-        db.session.add(new_conversation)
+
         db.session.commit()
         return jsonify({"id": str(new_conversation.id)}), 201
     return "no post method"
@@ -106,7 +103,7 @@ def conversation_delete():
     if request.method == "POST":
         data = json.loads(request.data)
         conversation_id = data.get("id")
-        conversation_to_delete = Conversation.query.get(conversation_id)
+        conversation_to_delete = get_conversation(conversation_id=conversation_id)
 
         if conversation_to_delete:
             db.session.delete(conversation_to_delete)

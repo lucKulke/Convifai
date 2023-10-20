@@ -11,6 +11,7 @@ from flask_login import (
     current_user,
 )
 import uuid
+from .crud import get_user, add_user
 
 auth = Blueprint("auth", __name__)
 
@@ -24,7 +25,7 @@ def login():
         password = data.get("password")
         print(password, flush=True)
 
-        user = User.query.filter_by(username=username).first()
+        user = get_user(username)
         if user:
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
@@ -63,18 +64,19 @@ def sign_up():
         username = data.get("username")
         password = data.get("password")
 
-        user = User.query.filter_by(username=username).first()
+        user = get_user(username=username)
 
         if user:
             return Response("you already have an account", status=406)
         else:
-            new_user = User(
+            new_user = add_user(
                 id=uuid.uuid4(),
                 username=username,
                 password=generate_password_hash(password=password, method="sha256"),
             )
-            db.session.add(new_user)
+
             db.session.commit()
+
             login_user(new_user)
             return Response("signed up", status=201)
     return "no post method"

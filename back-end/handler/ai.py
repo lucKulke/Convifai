@@ -3,11 +3,13 @@ from flask_login import login_required, current_user
 import requests
 import json
 import os
-import asyncio
-from .models import Iteration, Conversation
+
+
 import uuid
 from . import db
 import datetime
+from .crud import get_conversation, get_iterations, add_iteration
+from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToText
 
 
 ai = Blueprint("ai", __name__)
@@ -18,9 +20,7 @@ api_server = os.getenv("AIHUB")
 @login_required
 def available_languages():
     if request.method == "GET":
-        response = requests.get(
-            f"http://{api_server}/text_to_voice/azure/available_voices"
-        )
+        response = requests.get(f"{api_server}/text_to_voice/azure/available_voices")
         if response.status_code == 200:
             return response.json()
         else:
@@ -33,20 +33,19 @@ def available_languages():
 def save_iteration_data():
     if request.method == "POST":
         data = json.loads(request.data)
+        conversation_id = data["conversation_id"]
 
-        new_iteration = Iteration(
+        add_iteration(
             id=uuid.uuid4(),
             user_id=current_user.id,
             voice_to_text=data["user"],
             interlocutor=data["interlocutor"],
             corrector=data["corrector"],
-            conversation_id=data["conversation_id"],
+            conversation_id=conversation_id,
             created_at=datetime.datetime.now(),
         )
 
-        db.session.add(new_iteration)
-
-        conversation = Conversation.query.filter_by(id=data["conversation_id"]).first()
+        conversation = get_conversation(conversation_id)
         if conversation:
             conversation.title_updateable = 1
             conversation.picture_updateable = 1
@@ -65,22 +64,9 @@ def voice_to_text():
             audio_file = request.files["audio"]
             audio_file_size = os.fstat(audio_file.fileno()).st_size
             if audio_file_size <= 0:
-                return "smaller than 0"
+                return "audio_file empty"
 
-            # Check if the 'audio' field exists in the form data
-            data = {
-                "model": "small",  # Example: You can add other form fields here
-            }
-
-            # Create a dictionary with the audio file field, using the field name specified by the API
-            files = {"audio_file": ("audio.wav", audio_file)}
-
-            # Make the POST request with form data
-            response = requests.post(
-                f"http://{api_server}/voice_to_text/whisper?only_text=true",
-                data=data,  # Your form fields
-                files=files,  # The audio file
-            )
+            response = VoiceToText(url=api_server).request(audio_file=audio_file)
             if response.status_code == 200:
                 response_text = response.text[1:-1]
                 # Process the response as needed
@@ -99,11 +85,8 @@ def text_to_voice():
     if request.method == "POST":
         data = json.loads(request.data)
 
-        payload = {"text": data["text"], "language": data["language"]}
-        response = requests.post(
-            f"http://{api_server}/text_to_voice/azure",
-            data=json.dumps(payload),
-            stream=True,
+        response = TextToVoice(url=api_server).request(
+            text=data["text"], language=data["language"]
         )
         if response.status_code == 200:
 
@@ -132,27 +115,9 @@ def language_processing():
         data = json.loads(request.data)
         text = data["text"]
         conversation_id = data["conversation_id"]
-        iterations = Iteration.query.filter_by(
+        interlocutor_sections = get_conversation_history(
             conversation_id=conversation_id, user_id=user_id
-        ).all()
-
-        interlocutor_sections = []
-
-        sorted_iterations = sorted(iterations, key=lambda x: x.created_at)
-
-        for iteration in sorted_iterations:
-            interlocutor_sections.append(
-                {
-                    "role": "user",
-                    "content": f"{iteration.voice_to_text}",
-                },
-            )
-            interlocutor_sections.append(
-                {
-                    "role": "assistant",
-                    "content": f"{iteration.interlocutor}",
-                },
-            )
+        )
 
         interlocutor_sections.append({"role": "user", "content": str(text)})
 
@@ -162,59 +127,87 @@ def language_processing():
     return "not a post method"
 
 
-def api_request_language_processing(text, interlocutor_sections):
-    print("only one request gpt!", flush=True)
-    payload = {
-        "instances": {
-            "interlocutor": {
-                "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Also Try to keep your answers short.",
-                "sections": interlocutor_sections,
-            },
-            "corrector": {
-                "system_message": "Correct the grammer of the user",
-                "sections": [{"role": "user", "content": text}],
-            },
-        },
-        "model": "gpt-3.5-turbo",
-        "token": 100,
-    }
-
-    payload = json.dumps(payload)
-    print(payload, flush=True)
-    response = requests.post(
-        f"http://{api_server}/language_processing/chat_gpt",
-        headers={"Content-Type": "application/json"},
-        data=payload,
-    )
-    if response.status_code == 200:
-        return response.json()
-    else:
-        "error"
-
-
 @ai.route("/summarise_conversation", methods=["POST"])
 @login_required
 def summarise_conversation():
     user_id = current_user.id
     data = json.loads(request.data)
     conversation_id = data["conversation_id"]
-    conversation = Conversation.query.filter_by(
-        id=conversation_id, user_id=user_id
-    ).first()
-    response = []
+    conversation = get_conversation(conversation_id=conversation_id)
 
-    conversation.title = summarize_conversation(conversation.id, user_id)
+    conversation.title = summarise(conversation.id, user_id)
     conversation.title_updateable = 0
 
     db.session.commit()
     return {"new_title": conversation.title}
 
 
-def summarize_conversation(conversation_id, user_id):
-    iterations = Iteration.query.filter_by(
-        conversation_id=conversation_id, user_id=user_id
-    ).all()
+@ai.route("/generate_image", methods=["POST"])
+@login_required
+def generate_image_for_conversation():
+    if request.method == "POST":
+        data = json.loads(request.data)
+        conversation_id = data.get("conversation_id")
+        conversation = get_conversation(conversation_id=conversation_id)
 
+        if conversation:
+            description = conversation.title
+
+            picture_name = generate_new_image(description)
+
+            conversation.picture = picture_name
+            conversation.picture_updateable = 0
+            db.session.commit()
+
+            return {"picture_name": picture_name}
+        else:
+            return Response(
+                f"Conversation with ID {conversation_id} not found", status=404
+            )
+    return "no post method"
+
+
+def generate_new_image(description):
+    data = ImageGenerator(url=api_server).request(description=description)
+
+    image_data = requests.get(data["url"])
+    picture_name = f"image_{uuid.uuid4()}.png"
+
+    relative_path = os.path.join("../back-end/img", picture_name)
+    # Convert to an absolute path
+    absolute_path = os.path.abspath(relative_path)
+
+    with open(absolute_path, "wb") as f:
+        f.write(image_data.content)
+
+    return picture_name  # picture_name
+
+
+def summarise(conversation_id, user_id):
+    sections = get_conversation_history(
+        conversation_id=conversation_id, user_id=user_id
+    )
+
+    response = request_for_summary(sections)
+    print(response, flush=True)
+    return response["summarizer"]["content"]
+
+
+def request_for_summary(sections):
+    summarizer = {
+        "name": "summarizer",
+        "system_message": "Please summarise the conversation to a title.",
+        "sections": sections,
+    }
+
+    response = LanguageProcessing(url=api_server).request(
+        token=100, model="gpt-3.5-turbo", instances=[summarizer]
+    )
+    return response
+
+
+def get_conversation_history(conversation_id, user_id):
+    iterations = get_iterations(conversation_id=conversation_id, user_id=user_id)
     sections = []
 
     sorted_iterations = sorted(iterations, key=lambda x: x.created_at)
@@ -232,89 +225,22 @@ def summarize_conversation(conversation_id, user_id):
                 "content": f"{iteration.interlocutor}",
             },
         )
-
-    response = request_language_processing(sections)
-    print(response, flush=True)
-    return response["summarizer"]["content"]
+    return sections
 
 
-def request_language_processing(sections):
-    payload = {
-        "instances": {
-            "summarizer": {
-                "system_message": "Please summarise the conversation to a title.",
-                "sections": sections,
-            }
-        },
-        "model": "gpt-3.5-turbo",
-        "token": 50,
+def api_request_language_processing(text, interlocutor_sections):
+    interlocutor = {
+        "name": "interlocutor",
+        "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Also Try to keep your answers short.",
+        "sections": interlocutor_sections,
     }
 
-    payload = json.dumps(payload)
-    print(payload, flush=True)
-    response = requests.post(
-        f"http://{api_server}/language_processing/chat_gpt",
-        headers={"Content-Type": "application/json"},
-        data=payload,
-    )
-    if response.status_code == 200:
-        return response.json()
-    else:
-        "error"
-
-
-@ai.route("/generate_image", methods=["POST"])
-@login_required
-def generate_image_for_conversation():
-    if request.method == "POST":
-        user_id = current_user.id
-        data = json.loads(request.data)
-        conversation_id = data.get("conversation_id")
-        conversation = Conversation.query.get(conversation_id)
-
-        if conversation:
-            description = conversation.title
-
-            picture_name = generate_new_image(description)
-
-            # end
-
-            conversation.picture = picture_name
-            conversation.picture_updateable = 0
-            db.session.commit()
-
-            return {"picture_name": picture_name}
-        else:
-            return Response(
-                f"Conversation with ID {conversation_id} not found", status=404
-            )
-    return "no post method"
-
-
-def generate_new_image(description):
-    payload = {
-        "description": description + ", cartoon style",
-        "number_of_pictures": 1,
-        "size": "512x512",
+    corrector = {
+        "name": "corrector",
+        "system_message": "Correct the grammer of the user",
+        "sections": [{"role": "user", "content": text}],
     }
 
-    response = requests.post(
-        f"http://{api_server}/image_generation/dalle",
-        headers={"Content-Type": "application/json"},
-        json=payload,
+    return LanguageProcessing(api_server).request(
+        token=100, model="gpt-3.5-turbo", instances=[interlocutor, corrector]
     )
-
-    data = response.json()
-    print(data["url"], flush=True)
-
-    image_data = requests.get(data["url"])
-    picture_name = f"image_{uuid.uuid4()}.png"
-
-    relative_path = os.path.join("../back-end/img", picture_name)
-    # Convert to an absolute path
-    absolute_path = os.path.abspath(relative_path)
-
-    with open(absolute_path, "wb") as f:
-        f.write(image_data.content)
-
-    return picture_name  # picture_name
