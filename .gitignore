@@ -16,6 +16,7 @@ dist-ssr
 backend-secrets.env
 *.sqlite3
 *.env
+img
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
