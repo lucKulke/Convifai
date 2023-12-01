@@ -29,7 +29,7 @@ function Steps(props) {
   };
 
   return (
-    <div className="mt m-10 flex justify-around items-center">
+    <div className="2xl:m-7 xl:m-3 lg:m-2 sm:m-0 flex justify-around items-center">
       <div
         className={`flex h-10 w-20 items-center justify-evenly rounded-xl border-2 ${
           step1 ? "border-black shadow-md" : "border-gray-200"
