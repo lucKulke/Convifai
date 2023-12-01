@@ -28,6 +28,7 @@ class Conversation(db.Model):
     picture_updateable = db.Column(TINYINT(unsigned=True))
     title_updateable = db.Column(TINYINT(unsigned=True))
     user_id = db.Column(db.String(36))
+    created_at = db.Column(db.DateTime)
 
 
 class Iteration(db.Model):

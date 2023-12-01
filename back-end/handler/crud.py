@@ -32,13 +32,16 @@ def get_conversations(user_id):
     return Conversation.query.filter_by(user_id=user_id).all()
 
 
-def add_conversation(id, language, title, picture, user_id):
+def add_conversation(id, language, title, picture, user_id, created_at):
     new_conversation = Conversation(
         id=id,
         language=language,
         title=title,
         picture=picture,
+        picture_updateable=0,
+        title_updateable=0,
         user_id=user_id,
+        created_at=created_at,
     )
     db.session.add(new_conversation)
     return new_conversation
@@ -55,3 +58,4 @@ def add_user(id, username, password):
         password=password,
     )
     db.session.add(new_user)
+    return new_user

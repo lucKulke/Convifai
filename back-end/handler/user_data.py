@@ -2,6 +2,7 @@ from flask import Blueprint, request, Response
 from flask_login import login_required, current_user
 from . import db
 import json
+import datetime
 
 from flask import jsonify
 import uuid
@@ -33,7 +34,7 @@ def conversation(id_):
                 {
                     "user": iteration.voice_to_text,
                     "interlocutor": iteration.interlocutor,
-                    "corrector": "iteration.corrector",
+                    "corrector": iteration.corrector,
                 },
             )
 
@@ -53,8 +54,9 @@ def conversations():
         user_id = current_user.id
         conversations = get_conversations(user_id=user_id)
         response = []
+        sorted_conversations = sorted(conversations, key=lambda x: x.created_at)
 
-        for conversation in conversations:
+        for conversation in sorted_conversations:
             response.append(
                 {
                     "id": conversation.id,
@@ -90,6 +92,7 @@ def conversation_add():
             title=title,
             picture=picture,
             user_id=user_id,
+            created_at=datetime.datetime.now(),
         )
 
         db.session.commit()
