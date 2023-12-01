@@ -13,7 +13,7 @@ from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToTe
 
 
 ai = Blueprint("ai", __name__)
-api_server = os.getenv("AIHUB")
+api_server = os.getenv("AIHUB_URL")
 
 
 @ai.route("/available_languages")
@@ -60,23 +60,17 @@ def save_iteration_data():
 @login_required
 def voice_to_text():
     if request.method == "POST":
-        try:
-            audio_file = request.files["audio"]
-            audio_file_size = os.fstat(audio_file.fileno()).st_size
-            if audio_file_size <= 0:
-                return "audio_file empty"
+        audio_file = request.files["audio"]
+        audio_file_size = os.fstat(audio_file.fileno()).st_size
+        if audio_file_size <= 0:
+            return "audio_file empty"
 
-            response = VoiceToText(url=api_server).request(audio_file=audio_file)
-            if response.status_code == 200:
-                response_text = response.text[1:-1]
-                # Process the response as needed
-                return response_text
-            else:
-                # Handle the error response here
-                return f"HTTP error! Status: {response.status_code}"
-        except Exception as err:
-            print(f"error {err}")
-            return Response(content=f"error: {str(err)}", status_code=500)
+        response = VoiceToText(url=api_server).request(audio_file=audio_file)
+
+        json_response = response.json()
+        # Process the response as needed
+        return json_response.get("whisper_result")
+
     return "no post method", 201
 
 
@@ -203,7 +197,7 @@ def request_for_summary(sections):
     response = LanguageProcessing(url=api_server).request(
         token=100, model="gpt-3.5-turbo", instances=[summarizer]
     )
-    return response
+    return response.get("whisper_result")
 
 
 def get_conversation_history(conversation_id, user_id):
