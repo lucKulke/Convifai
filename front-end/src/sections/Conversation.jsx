@@ -4,7 +4,7 @@ import Actions from "../components/Steps";
 import RecordingButton from "../components/RecordingButton";
 import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DataProvider from "../functions/DataProvider";
 import { Navigate, useParams } from "react-router-dom";
 import { AiFillWarning } from "react-icons/ai";
@@ -50,6 +50,7 @@ function Conversation(props) {
   const [processing, setProcessing] = useState(false);
   const [aiSpeaking, setAiSpeaking] = useState(false);
   const [recordingStoped, setRecordingStoped] = useState(false);
+  const audioRef = useRef(null);
 
   const [mediaStream, setMediaStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -78,9 +79,11 @@ function Conversation(props) {
       };
 
       recorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        const audioBlob = new Blob(audioChunks);
 
         console.log("AudioBlob size: ", audioBlob.size);
+        setUserText(" ");
+        setAiInterlocutorText(" ");
 
         startIteration(audioBlob);
 
@@ -89,8 +92,6 @@ function Conversation(props) {
 
       recorder.start();
       setRecording(true);
-      setUserText(" ");
-      setAiInterlocutorText(" ");
     } catch (error) {
       console.error("Error starting recording:", error);
     }
@@ -170,6 +171,8 @@ function Conversation(props) {
       const audio = new Audio(audioUrl);
       setAiSpeaking(true);
       setProcessing(false);
+      audioRef.current = audio;
+
       audio.play();
       audio.addEventListener("ended", () => {
         setAiSpeaking(false);
@@ -179,7 +182,29 @@ function Conversation(props) {
       });
     }
   };
-  const [audioSrc, setAudioSrc] = useState(null);
+
+  const pauseAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  const startAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  };
+
+  const cancelAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setAiSpeaking(false);
+      setRecordingStoped(false);
+
+      setAiCorrectorText("");
+    }
+  };
 
   const handleListenToCorrection = (text) => {
     convertTextToVoice(text);
@@ -194,14 +219,21 @@ function Conversation(props) {
             userInput={userText}
             aiOutput={aiInterlocutorText}
           />
-          {aiSpeaking && <VoiceAnimation />}
-          <RecordingButton
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording} // Handle touch events on mobile devices
-            onTouchEnd={stopRecording}
-            disabled={recordingStoped}
-          />
+          {aiSpeaking ? (
+            <VoiceAnimation
+              pause_audio={pauseAudio}
+              start_audio={startAudio}
+              cancel_audio={cancelAudio}
+            />
+          ) : (
+            <RecordingButton
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onTouchStart={startRecording} // Handle touch events on mobile devices
+              onTouchEnd={stopRecording}
+              disabled={recordingStoped}
+            />
+          )}
 
           <div>
             <HistoryButton
