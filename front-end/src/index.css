@@ -11,9 +11,6 @@
     @apply my-3 text-slate-700 text-lg font-mono;
   }
 
-  .dropdown {
-  }
-
   .max-container {
     max-width: 1440px;
     margin: 0 auto;
@@ -86,5 +83,13 @@
   .bar:nth-child(10) {
     left: 127px;
     animation-duration: 442ms;
+  }
+  .bar:nth-child(11) {
+    left: 141px;
+    animation-duration: 422ms;
+  }
+  .bar:nth-child(12) {
+    left: 155px;
+    animation-duration: 402ms;
   }
 }
