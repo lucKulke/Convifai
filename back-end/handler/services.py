@@ -10,7 +10,7 @@ AIHUB_CONFIG = {
     "username": os.getenv("AIHUB_USERNAME"),
     "password": os.getenv("AIHUB_PASSWORD"),
 }
-print(AIHUB_CONFIG, flush=True)
+
 
 from werkzeug.exceptions import HTTPException
 
