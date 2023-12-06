@@ -315,7 +315,7 @@ class DataProvider {
 
   static async voice_to_text(audioBlob) {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "audio.wav");
+    formData.append("audio", audioBlob, "audio.webm");
     const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/voice_to_text`;
     try {
       const response = await fetch(apiUrl, {
