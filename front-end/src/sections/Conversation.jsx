@@ -9,6 +9,7 @@ import DataProvider from "../functions/DataProvider";
 import { Navigate, useParams } from "react-router-dom";
 import { AiFillWarning } from "react-icons/ai";
 import VoiceAnimation from "../components/VoiceAnimation";
+import Alert from "../components/Alert";
 
 function Conversation(props) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -29,7 +30,6 @@ function Conversation(props) {
   }, []);
 
   const get_conversation_data = () => {
-    console.log(id);
     DataProvider.fetch_conversation_data(id)
       .then((data) => {
         setChatHistory(data.history);
@@ -55,12 +55,21 @@ function Conversation(props) {
   const [mediaStream, setMediaStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
+  const [recordingError, setRecordingError] = useState(false);
 
   const [historyVisible, sethistoryVisible] = useState(false);
 
   const handleHistoryButton = () => {
     sethistoryVisible((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (recordingError) {
+      setTimeout(() => {
+        setRecordingError(false);
+      }, 5000);
+    }
+  }, [recordingError]);
 
   const startRecording = async () => {
     try {
@@ -79,15 +88,21 @@ function Conversation(props) {
       };
 
       recorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks);
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
         console.log("AudioBlob size: ", audioBlob.size);
-        setUserText(" ");
-        setAiInterlocutorText(" ");
+        if (audioBlob.size < 5000) {
+          setRecordingError(true);
+          setRecording(false);
+          setRecordingStoped(false);
+        } else {
+          setUserText(" ");
+          setAiInterlocutorText(" ");
 
-        startIteration(audioBlob);
+          startIteration(audioBlob);
 
-        audioChunks.length = 0;
+          audioChunks.length = 0;
+        }
       };
 
       recorder.start();
@@ -99,7 +114,6 @@ function Conversation(props) {
 
   const stopRecording = () => {
     if (mediaRecorder) {
-      console.log("stopRecording function");
       mediaRecorder.stop();
       setRecordingStoped(true);
       setRecording(false);
@@ -114,7 +128,6 @@ function Conversation(props) {
     setProcessing(true);
     const textFromUser = await convertVoiceToText(audioBlob);
     setUserText(textFromUser);
-    console.log("text from user:", textFromUser);
     const languageProccessingResponse = await languageProccessing(
       textFromUser,
       id
@@ -138,7 +151,6 @@ function Conversation(props) {
       corrector: textFromCorrector,
     };
 
-    console.log(iterationData);
     await DataProvider.save_iteration_data(iterationData, id);
     const newArray = [...chatHistory, iterationData];
     setChatHistory(newArray);
@@ -153,7 +165,6 @@ function Conversation(props) {
   const convertTextToVoice = async (text, language) => {
     const audioUrl = await DataProvider.text_to_voice(text, language);
     playAudioBlob(audioUrl);
-    console.log("Audio wird abgespielt");
   };
 
   const languageProccessing = async (textFromUser, conversation_id) => {
@@ -212,6 +223,14 @@ function Conversation(props) {
 
   return (
     <>
+      {recordingError && (
+        <Alert
+          text={
+            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
+          }
+          type={"fail"}
+        />
+      )}
       {loggedIn ? (
         <>
           <Steps step1={recording} step2={processing} step3={aiSpeaking} />
