@@ -71,20 +71,12 @@ class VoiceToText(AIHub):
 
     def request(self, audio_file):
         auth_token = self.get_auth_token()
-        print(audio_file.stream, flush=True)
 
-        print(datetime.datetime.now(), flush=True)
-        webm_audio = AudioSegment.from_file(audio_file.stream, format="webm")
-
-        # Export AudioSegment as WAV file
-        wav_buffer = io.BytesIO()
-        webm_audio.export(wav_buffer, format="wav")
-        print(datetime.datetime.now(), flush=True)
         files = {
             "audiofile": (
                 audio_file.filename,
-                wav_buffer.getvalue(),
-                "audio/wav",
+                audio_file.stream,
+                f"{audio_file.content_type}",
             )
         }
 
