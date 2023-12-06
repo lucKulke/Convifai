@@ -197,7 +197,7 @@ def request_for_summary(sections):
     response = LanguageProcessing(url=api_server).request(
         token=100, model="gpt-3.5-turbo", instances=[summarizer]
     )
-    return response.get("whisper_result")
+    return response
 
 
 def get_conversation_history(conversation_id, user_id):
@@ -225,7 +225,7 @@ def get_conversation_history(conversation_id, user_id):
 def api_request_language_processing(text, interlocutor_sections):
     interlocutor = {
         "name": "interlocutor",
-        "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Also Try to keep your answers short.",
+        "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Keep your answers short.",
         "sections": interlocutor_sections,
     }
 
