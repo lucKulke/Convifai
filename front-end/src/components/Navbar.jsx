@@ -55,7 +55,7 @@ function Navbar(props) {
         </div>
         <ul className="flex justify-around w-full max-md:hidden">
           {navLinks.map((item) => (
-            <li className="navbarLink" id={item.label}>
+            <li key={item.label} className="navbarLink" id={item.label}>
               <Link to={item.href}>{item.label}</Link>
             </li>
           ))}
