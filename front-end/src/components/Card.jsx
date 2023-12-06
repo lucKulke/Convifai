@@ -24,17 +24,20 @@ export default function Card(props) {
     setPictureUpdateable(0);
   };
 
-  const newTitle = async (conversation_id) => {
+  const creatingNewTitle = async (conversation_id) => {
     setTitleUpdateable(2);
+
     const title = await props.update_title(conversation_id);
     setTitle(title);
     console.log("title updated", title);
     setTitleUpdateable(0);
   };
 
-  if (titleUpdateable == 1) {
-    newTitle(props.id);
-  }
+  useEffect(() => {
+    if (titleUpdateable === 1) {
+      creatingNewTitle(props.id);
+    }
+  }, [titleUpdateable]);
 
   return (
     <div className="flex justify-center">
@@ -44,7 +47,7 @@ export default function Card(props) {
             <img src={picture_loading} alt="gif" />
           ) : (
             <img
-              src={`http://localhost:8000/images/${picture}`}
+              src={`${import.meta.env.VITE_BACKEND_URI}/images/${picture}`}
               alt="picture"
             />
           )}
