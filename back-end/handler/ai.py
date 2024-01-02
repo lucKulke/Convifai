@@ -188,14 +188,16 @@ def summarise(conversation_id, user_id):
 
 
 def request_for_summary(sections):
+    token = 35
+
     summarizer = {
         "name": "summarizer",
-        "system_message": "Please summarise the conversation to a title.",
+        "system_message": f"Please summarise the conversation to a title. Use a maximum of {token} tokens for your answer",
         "sections": sections,
     }
 
     response = LanguageProcessing(url=api_server).request(
-        token=100, model="gpt-3.5-turbo", instances=[summarizer]
+        token=token, model="gpt-3.5-turbo", instances=[summarizer]
     )
     return response
 
@@ -223,9 +225,11 @@ def get_conversation_history(conversation_id, user_id):
 
 
 def api_request_language_processing(text, interlocutor_sections):
+    token = 100
+
     interlocutor = {
         "name": "interlocutor",
-        "system_message": "Try to have a conversation with the user. That also means asking counter questions from time to time. Keep your answers short.",
+        "system_message": f"Try to have a conversation with the user. That also means asking counter questions from time to time. Keep your answers short. Use a maximum of {token} tokens for your answer",
         "sections": interlocutor_sections,
     }
 
@@ -236,5 +240,5 @@ def api_request_language_processing(text, interlocutor_sections):
     }
 
     return LanguageProcessing(api_server).request(
-        token=100, model="gpt-3.5-turbo", instances=[interlocutor, corrector]
+        token=token, model="gpt-3.5-turbo", instances=[interlocutor, corrector]
     )
