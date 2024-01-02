@@ -7,10 +7,11 @@ function Hero() {
       <div className="flex flex-col md:flex-row mr-3 ml-3 items-center justify-between">
         <div className="md:w-1/2 mb-8 md:mb-0 ">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight max-md:flex max-md:justify-center">
-            Welcome to Tandem AI
+            Welcome to Convifai
           </h1>
           <p className="text-lg md:text-xl mt-4 max-md:flex max-md:justify-center">
-            Learn new languages with Tandem ai!
+            Learn new languages with Convifai by speaking to an language
+            processing model!
           </p>
           <div className="max-md:flex max-md:justify-center">
             <Link to="/login">
