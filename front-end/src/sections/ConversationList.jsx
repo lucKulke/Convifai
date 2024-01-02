@@ -7,6 +7,7 @@ import { Navigate } from "react-router-dom";
 
 function ConversationList(props) {
   useEffect(() => {
+    console.log("mount conversationList");
     if (props.loggedIn) {
       DataProvider.fetch_conversations_data()
         .then((data) => {
@@ -62,6 +63,7 @@ function ConversationList(props) {
         };
         const newArray = [...conversations, newConversation];
         setConversations(newArray);
+        console.log("conversations array", conversations);
         setConversationListChanged("created");
       })
       .catch((error) => {
@@ -73,12 +75,12 @@ function ConversationList(props) {
     DataProvider.delete_conversation(conversation_id)
       .then((response) => {
         if (response === true) {
-          console.log("delete");
           const newArray = arrayRemoveElementById(
-            [...conversations],
+            conversations,
             conversation_id
           );
           setConversations(newArray);
+          console.log("conversations array", conversations);
           setConversationListChanged("deleted");
         }
       })
@@ -86,6 +88,7 @@ function ConversationList(props) {
         console.error("Error:", error);
       });
   };
+
   function arrayRemoveElementById(arr, id) {
     return arr.filter(function (conversation) {
       return conversation.id != id;
@@ -125,6 +128,7 @@ function ConversationList(props) {
         <ul className="my-[150px] grid grid-cols-3 content-center gap-10 m-3 max-middle:grid-cols-2 max-sm:grid-cols-1">
           {conversations.map((conversation) => (
             <Card
+              key={conversation.id}
               id={conversation.id}
               delete={deleteConversation}
               title={conversation.title}
