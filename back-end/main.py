@@ -16,6 +16,7 @@ def handle_exception(error):
         }
     )
     response.content_type = "application/json"
+    response.status_code = 500
     return response
 
 
