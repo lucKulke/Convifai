@@ -124,7 +124,7 @@ class ImageGenerator(AIHub):
         auth_token = self.get_auth_token()
 
         payload = {
-            "description": description + ", cartoon style",
+            "description": description + ", flat art",
             "number_of_pictures": 1,
             "size": "512x512",
         }
