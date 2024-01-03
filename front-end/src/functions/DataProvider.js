@@ -352,8 +352,8 @@ class DataProvider {
       if (response.status === 200) {
         const data = await response.json();
         return {
-          interlocutor: data.interlocutor.content,
-          corrector: data.corrector.content,
+          interlocutor: data.interlocutor.content.trimStart().trimEnd(),
+          corrector: data.corrector.content.trimStart().trimEnd(),
         };
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);
