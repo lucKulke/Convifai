@@ -10,6 +10,7 @@ function ChatHistory(props) {
               <UserChatBubble
                 listenToCorrection={props.listenToCorrection}
                 userText={section.user}
+                aiSpeaking={props.aiSpeaking}
                 correctorText={section.corrector}
               ></UserChatBubble>
               <AiChatBubble text={section.interlocutor}></AiChatBubble>

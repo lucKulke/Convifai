@@ -48,9 +48,8 @@ function UserChatBubble(props) {
           <li className="flex items-center">
             <CorrectionChatBubble
               onclick={props.listenToCorrection}
+              aiSpeaking={props.aiSpeaking}
               text={props.correctorText}
-              listenCorrection={listenCorrection}
-              setListenCorrection={setListenCorrection}
             />
           </li>
         )}

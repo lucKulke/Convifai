@@ -7,7 +7,7 @@ import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState, useRef } from "react";
 import DataProvider from "../functions/DataProvider";
 import { Navigate, useParams } from "react-router-dom";
-import { AiFillWarning } from "react-icons/ai";
+import { AiFillSound, AiFillWarning } from "react-icons/ai";
 import VoiceAnimation from "../components/VoiceAnimation";
 import Alert from "../components/Alert";
 
@@ -218,7 +218,7 @@ function Conversation(props) {
   };
 
   const handleListenToCorrection = (text) => {
-    convertTextToVoice(text);
+    convertTextToVoice(text, language);
   };
 
   return (
@@ -262,6 +262,7 @@ function Conversation(props) {
             {historyVisible && (
               <ChatHistory
                 listenToCorrection={handleListenToCorrection}
+                aiSpeaking={aiSpeaking}
                 history={chatHistory}
               />
             )}

@@ -2,10 +2,7 @@ import { PiSpeakerNoneLight } from "react-icons/pi";
 import { PiSpeakerHighLight } from "react-icons/pi";
 function CorrectionChatBubble(props) {
   const handleListenToCorrectionButton = async (text) => {
-    props.setListenCorrection(true);
-    await sleep(2000);
     props.onclick(text);
-    props.setListenCorrection(false);
   };
 
   function sleep(ms) {
@@ -20,11 +17,11 @@ function CorrectionChatBubble(props) {
         </div>
       </div>
       <button
-        disabled={props.listenCorrection}
+        disabled={props.aiSpeaking}
         className="p-2"
         onClick={() => handleListenToCorrectionButton(props.text)}
       >
-        {props.listenCorrection ? (
+        {props.aiSpeaking ? (
           <PiSpeakerHighLight className="h-7 w-7" />
         ) : (
           <PiSpeakerNoneLight className="h-7 w-7" />
