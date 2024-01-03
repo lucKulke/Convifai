@@ -10,8 +10,18 @@ function UserChatBubble(props) {
   const [listenCorrection, setListenCorrection] = useState(false);
 
   const handleCorrectorChatBubble = () => {
-    setCorrectionVisible((prev) => !prev);
-    setCorrectionNoticed(true);
+    const required = correction_required();
+    if (required) {
+      setCorrectionVisible((prev) => !prev);
+      setCorrectionNoticed(true);
+    }
+  };
+
+  const correction_required = () => {
+    return (
+      props.correctorText.trimStart().trimEnd() !=
+      props.userText.trimStart().trimEnd()
+    );
   };
 
   return (
@@ -28,7 +38,9 @@ function UserChatBubble(props) {
             <p className="font-mono text-left p-3">{props.userText}</p>
 
             <div className="relative">
-              <InfoPing noticed={correctionNoticed}></InfoPing>
+              {correction_required() && (
+                <InfoPing noticed={correctionNoticed}></InfoPing>
+              )}
             </div>
           </button>
         </li>
