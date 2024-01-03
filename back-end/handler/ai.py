@@ -235,7 +235,7 @@ def api_request_language_processing(text, interlocutor_sections):
 
     corrector = {
         "name": "corrector",
-        "system_message": "Correct the grammer of the user",
+        "system_message": f"Only correct the grammer of the user. Do not go into the meaning of the text, simply correct the grammar of the text! Use a maximum of {token} tokens for your answer",
         "sections": [{"role": "user", "content": text}],
     }
 
