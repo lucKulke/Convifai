@@ -212,7 +212,6 @@ class DataProvider {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data);
         return data;
       }
       if (response.status === 201) {
