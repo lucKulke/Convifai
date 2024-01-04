@@ -137,6 +137,7 @@ class ImageGenerator(AIHub):
                 },
                 json=payload,
             )
+            print(f"response: {response}")
             response.raise_for_status()
         except requests.exceptions.RequestException as errex:
             print(f"error in {type(self).__name__} service: {errex}", flush=True)
