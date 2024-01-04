@@ -26,17 +26,17 @@ user_data = Blueprint("user_data", __name__)
 @login_required
 def conversation(id_):
     if request.method == "GET":
-        user_id = current_user.id  # current_user.id
+        user_id = current_user.id
         conversation_id = id_
 
         interations = get_iterations(conversation_id=conversation_id, user_id=user_id)
-
+        sorted_iterations = sorted(interations, key=lambda x: x.created_at)
         conversation = get_conversation(conversation_id=conversation_id)
 
         response = {}
         history = []
 
-        for iteration in interations:
+        for iteration in sorted_iterations:
             history.append(
                 {
                     "user": iteration.voice_to_text,
@@ -47,6 +47,7 @@ def conversation(id_):
 
         response["history"] = history
         response["language"] = conversation.language
+        print(response, flush=True)
         if not response:
             return jsonify([]), 201
         else:
