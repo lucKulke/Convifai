@@ -2,7 +2,8 @@ from flask import Blueprint, request, Response
 from flask_login import login_required, current_user
 import requests
 import json
-import os
+import os, io
+import tempfile
 
 
 import uuid
@@ -10,10 +11,17 @@ from . import db
 import datetime
 from .crud import get_conversation, get_iterations, add_iteration
 from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToText
+from .utilitys import AWS_S3
 
 
 ai = Blueprint("ai", __name__)
 api_server = os.getenv("AIHUB_URL")
+aws_s3 = AWS_S3(
+    region=os.getenv("AWS_BUCKET_REGION"),
+    bucket_name=os.getenv("AWS_BUCKET_NAME"),
+    signature_version="v4",
+    retries={"max_attempts": 10, "mode": "standard"},
+)
 
 
 @ai.route("/available_languages")
@@ -143,11 +151,11 @@ def generate_image_for_conversation():
         data = json.loads(request.data)
         conversation_id = data.get("conversation_id")
         conversation = get_conversation(conversation_id=conversation_id)
-
         if conversation:
             description = conversation.title
 
             picture_name = generate_new_image(description)
+            print(f"hallo das ist test, {picture_name}", flush=True)
 
             conversation.picture = picture_name
             conversation.picture_updateable = 0
@@ -167,14 +175,15 @@ def generate_new_image(description):
     image_data = requests.get(data["url"])
     picture_name = f"image_{uuid.uuid4()}.png"
 
-    relative_path = os.path.join("../back-end/img", picture_name)
-    # Convert to an absolute path
-    absolute_path = os.path.abspath(relative_path)
-
-    with open(absolute_path, "wb") as f:
-        f.write(image_data.content)
-
-    return picture_name  # picture_name
+    success = aws_s3.upload_image(
+        io.BytesIO(image_data.content),
+        picture_name,
+        "image/png",
+    )
+    if success:
+        return picture_name
+    else:
+        return "conversation_default.png"
 
 
 def summarise(conversation_id, user_id):

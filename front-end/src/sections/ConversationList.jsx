@@ -50,7 +50,7 @@ function ConversationList(props) {
 
   const addConversation = (language) => {
     const title = "New Conversation";
-    const picture = "robot.png";
+    const picture = "conversation_default.png";
     DataProvider.create_conversation(language, title, picture)
       .then((id) => {
         const newConversation = {
