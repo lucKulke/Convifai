@@ -12,6 +12,8 @@ from .crud import get_conversation, get_iterations
 from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToText
 from .utilitys import AWS_S3
 
+from config import CONFIG
+
 
 ai_routes = Blueprint("ai_routes", __name__)
 api_server = os.getenv("AIHUB_URL")
@@ -126,7 +128,6 @@ def generate_image_for_conversation():
             description = conversation.title
 
             picture_name = generate_new_image(description)
-            print(f"hallo das ist test, {picture_name}", flush=True)
 
             conversation.picture = picture_name
             conversation.picture_updateable = 0
@@ -172,7 +173,7 @@ def request_for_summary(sections):
 
     summarizer = {
         "name": "summarizer",
-        "system_message": f"Please summarise the conversation to a title. Use a maximum of {token} tokens for your answer",
+        "system_message": CONFIG["language_processing"]["instructions"]["summarizer"],
         "sections": sections,
     }
 
@@ -209,16 +210,18 @@ def api_request_language_processing(text, interlocutor_sections):
 
     interlocutor = {
         "name": "interlocutor",
-        "system_message": f"Try to have a conversation with the user. That also means asking counter questions from time to time. Keep your answers short. Use a maximum of {token} tokens for your answer",
+        "system_message": CONFIG["language_processing"]["instructions"]["interlocutor"],
         "sections": interlocutor_sections,
     }
 
     corrector = {
         "name": "corrector",
-        "system_message": f"Only correct the grammer of the user. Do not go into the meaning of the text, simply correct the grammar of the text! Use a maximum of {token} tokens for your answer!",
+        "system_message": CONFIG["language_processing"]["instructions"]["corrector"],
         "sections": [{"role": "user", "content": text}],
     }
 
     return LanguageProcessing(api_server).request(
-        token=token, model="gpt-3.5-turbo", instances=[interlocutor, corrector]
+        token=token,
+        model=CONFIG["language_processing"]["model"],
+        instances=[interlocutor, corrector],
     )

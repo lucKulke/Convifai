@@ -1,0 +1,9 @@
+language_processing:
+  instructions:
+    interlocutor: Try to have a conversation with the user. That also means asking counter questions from time to time. Keep your answers short. Use a maximum of 100 tokens for your answer
+    corrector: Only correct the grammer of the user. Do not go into the meaning of the text, simply correct the grammar of the text! Use a maximum of 100 tokens for your answer!
+    summarizer: Please summarise the conversation to a title. Use a maximum of 35 tokens for your answer!
+  model: gpt-3.5-turbo
+
+image_generation:
+  instructions: "flat art"

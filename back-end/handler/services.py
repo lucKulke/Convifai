@@ -2,7 +2,7 @@ import json
 import requests
 import os, io
 from pydub import AudioSegment
-import datetime
+from config import CONFIG
 
 TOKEN_MANAGEMENT_URL = os.getenv("TOKEN_MANAGEMENT_URL")
 AIHUB_CONFIG = {
@@ -46,7 +46,6 @@ class LanguageProcessing(AIHub):
             }
 
         payload = json.dumps(payload)
-        # print(payload, flush=True)
         try:
             response = requests.post(
                 f"{self.url}/language_processing/chat_gpt",
@@ -124,7 +123,9 @@ class ImageGenerator(AIHub):
         auth_token = self.get_auth_token()
 
         payload = {
-            "description": description + ", flat art",
+            "description": description
+            + ", "
+            + CONFIG["image_generation"]["instructions"],
             "number_of_pictures": 1,
             "size": "512x512",
         }
