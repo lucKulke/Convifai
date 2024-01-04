@@ -18,9 +18,11 @@ function UserChatBubble(props) {
   };
 
   const correction_required = () => {
+    const normalizeString = (str) =>
+      str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
     return (
-      props.correctorText.trimStart().trimEnd() !=
-      props.userText.trimStart().trimEnd()
+      normalizeString(props.correctorText) != normalizeString(props.userText)
     );
   };
 
