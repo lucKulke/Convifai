@@ -342,11 +342,15 @@ class DataProvider {
     }
   }
 
-  static async language_processing(textFromUser, id) {
+  static async language_processing(textFromUser, language, id) {
     const apiUrl = `${
       import.meta.env.VITE_BACKEND_URI
     }/ai_routes/language_processing`;
-    const requestData = { text: textFromUser, conversation_id: id };
+    const requestData = {
+      text: textFromUser,
+      conversation_id: id,
+      language: language,
+    };
     console.log(JSON.stringify(requestData));
     try {
       const response = await fetch(apiUrl, {

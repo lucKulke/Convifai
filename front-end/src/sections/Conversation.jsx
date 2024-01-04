@@ -130,6 +130,7 @@ function Conversation(props) {
     setUserText(textFromUser);
     const languageProccessingResponse = await languageProccessing(
       textFromUser,
+      language,
       id
     );
     const textFromCorrector = languageProccessingResponse.corrector;
@@ -170,6 +171,7 @@ function Conversation(props) {
   const languageProccessing = async (textFromUser, conversation_id) => {
     const data = await DataProvider.language_processing(
       textFromUser,
+      language,
       conversation_id
     );
     setAiCorrectorText(data.corrector);
