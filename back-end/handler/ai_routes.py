@@ -28,78 +28,70 @@ aws_s3 = AWS_S3(
 @ai_routes.route("/available_languages")
 @login_required
 def available_languages():
-    if request.method == "GET":
-        response = requests.get(f"{api_server}/text_to_voice/azure/available_voices")
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return {"error": "Failed to fetch data from FastAPI"}
-    return "no get method"
+    response = requests.get(f"{api_server}/text_to_voice/azure/available_voices")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": "Failed to fetch data from FastAPI"}
 
 
 @ai_routes.route("/voice_to_text", methods=["POST"])
 @login_required
 def voice_to_text():
-    if request.method == "POST":
-        audio_file = request.files["audio"]
-        audio_file_size = os.fstat(audio_file.fileno()).st_size
-        if audio_file_size <= 0:
-            return "audio_file empty"
+    audio_file = request.files["audio"]
+    audio_file_size = os.fstat(audio_file.fileno()).st_size
+    if audio_file_size <= 0:
+        return "audio_file empty"
 
-        response = VoiceToText(url=api_server).request(audio_file=audio_file)
+    response = VoiceToText(url=api_server).request(audio_file=audio_file)
 
-        json_response = response.json()
-        # Process the response as needed
-        return json_response.get("whisper_result")
-
-    return "no post method", 201
+    json_response = response.json()
+    # Process the response as needed
+    return json_response.get("whisper_result")
 
 
 @ai_routes.route("/text_to_voice", methods=["POST"])
 def text_to_voice():
-    if request.method == "POST":
-        data = json.loads(request.data)
+    data = json.loads(request.data)
 
-        response = TextToVoice(url=api_server).request(
-            text=data["text"], language=data["language"]
+    response = TextToVoice(url=api_server).request(
+        text=data["text"], language=data["language"]
+    )
+    if response.status_code == 200:
+
+        def generate():
+            for chunk in response.iter_content(chunk_size=1024):
+                yield chunk
+
+            response.close()  # Close the response to release resources
+
+        return Response(
+            generate(),
+            content_type="audio/wav",
         )
-        if response.status_code == 200:
-
-            def generate():
-                for chunk in response.iter_content(chunk_size=1024):
-                    yield chunk
-
-                response.close()  # Close the response to release resources
-
-            return Response(
-                generate(),
-                content_type="audio/wav",
-            )
-        else:
-            return Response(
-                {"detail": f"api status response: {response.status_code}"},
-                status=response.status_code,
-            )
-    return "not a post method"
+    else:
+        return Response(
+            {"detail": f"api status response: {response.status_code}"},
+            status=response.status_code,
+        )
 
 
 @ai_routes.route("/language_processing", methods=["POST"])
 def language_processing():
-    if request.method == "POST":
-        user_id = current_user.id
-        data = json.loads(request.data)
-        text = data["text"]
-        conversation_id = data["conversation_id"]
-        interlocutor_sections = get_conversation_history(
-            conversation_id=conversation_id, user_id=user_id
-        )
+    user_id = current_user.id
+    data = json.loads(request.data)
+    text = data["text"]
+    conversation_id = data["conversation_id"]
+    language = data["language"]
+    interlocutor_sections = get_conversation_history(
+        conversation_id=conversation_id, user_id=user_id
+    )
 
-        interlocutor_sections.append({"role": "user", "content": str(text)})
+    interlocutor_sections.append({"role": "user", "content": str(text)})
 
-        response = api_request_language_processing(text, interlocutor_sections)
-        print(response, flush=True)
-        return response, 200
-    return "not a post method"
+    response = api_request_language_processing(text, language, interlocutor_sections)
+    print(response, flush=True)
+    return response, 200
 
 
 @ai_routes.route("/summarise_conversation", methods=["POST"])
@@ -110,7 +102,7 @@ def summarise_conversation():
     conversation_id = data["conversation_id"]
     conversation = get_conversation(conversation_id=conversation_id)
 
-    conversation.title = summarise(conversation.id, user_id)
+    conversation.title = summarise(conversation.id, user_id, conversation.language)
     conversation.title_updateable = 0
 
     db.session.commit()
@@ -120,25 +112,21 @@ def summarise_conversation():
 @ai_routes.route("/generate_image", methods=["POST"])
 @login_required
 def generate_image_for_conversation():
-    if request.method == "POST":
-        data = json.loads(request.data)
-        conversation_id = data.get("conversation_id")
-        conversation = get_conversation(conversation_id=conversation_id)
-        if conversation:
-            description = conversation.title
+    data = json.loads(request.data)
+    conversation_id = data.get("conversation_id")
+    conversation = get_conversation(conversation_id=conversation_id)
+    if conversation:
+        description = conversation.title
 
-            picture_name = generate_new_image(description)
+        picture_name = generate_new_image(description)
 
-            conversation.picture = picture_name
-            conversation.picture_updateable = 0
-            db.session.commit()
+        conversation.picture = picture_name
+        conversation.picture_updateable = 0
+        db.session.commit()
 
-            return {"picture_name": picture_name}
-        else:
-            return Response(
-                f"Conversation with ID {conversation_id} not found", status=404
-            )
-    return "no post method"
+        return {"picture_name": picture_name}
+    else:
+        return Response(f"Conversation with ID {conversation_id} not found", status=404)
 
 
 def generate_new_image(description):
@@ -158,22 +146,23 @@ def generate_new_image(description):
         return "conversation_default.png"
 
 
-def summarise(conversation_id, user_id):
+def summarise(conversation_id, user_id, language):
     sections = get_conversation_history(
         conversation_id=conversation_id, user_id=user_id
     )
 
-    response = request_for_summary(sections)
+    response = request_for_summary(sections, language)
     print(response, flush=True)
-    return response["summarizer"]["content"]
+    return response["summarizer"]["content"][:150]
 
 
-def request_for_summary(sections):
+def request_for_summary(sections, language):
     token = 35
 
     summarizer = {
         "name": "summarizer",
-        "system_message": CONFIG["language_processing"]["instructions"]["summarizer"],
+        "system_message": CONFIG["language_processing"]["instructions"]["summarizer"]
+        + f"Only use {language} for your response!",
         "sections": sections,
     }
 
@@ -205,18 +194,23 @@ def get_conversation_history(conversation_id, user_id):
     return sections
 
 
-def api_request_language_processing(text, interlocutor_sections):
+def api_request_language_processing(text, language, interlocutor_sections):
     token = 100
+    language_instruction = (
+        f"Ignore the language from the user! Only use {language} for your response!"
+    )
 
     interlocutor = {
         "name": "interlocutor",
-        "system_message": CONFIG["language_processing"]["instructions"]["interlocutor"],
+        "system_message": CONFIG["language_processing"]["instructions"]["interlocutor"]
+        + language_instruction,
         "sections": interlocutor_sections,
     }
 
     corrector = {
         "name": "corrector",
-        "system_message": CONFIG["language_processing"]["instructions"]["corrector"],
+        "system_message": CONFIG["language_processing"]["instructions"]["corrector"]
+        + language_instruction,
         "sections": [{"role": "user", "content": text}],
     }
 

@@ -12,7 +12,7 @@ aws_s3 = AWS_S3(
 )
 
 
-@images.route("/<image_id>")
+@images.route("/<image_id>", methods=["GET"])
 def serve_image(image_id):
     if image_id == "conversation_default.png":
         return send_file("../img/robot.png")
