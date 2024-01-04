@@ -11,12 +11,13 @@ def get_iterations(conversation_id, user_id):
 def add_iteration(
     id, user_id, voice_to_text, interlocutor, corrector, conversation_id, created_at
 ):
+    max_string_size = 1000
     new_iteration = Iteration(
         id=id,
         user_id=user_id,
-        voice_to_text=voice_to_text,
-        interlocutor=interlocutor,
-        corrector=corrector,
+        voice_to_text=voice_to_text[:max_string_size],
+        interlocutor=interlocutor[:max_string_size],
+        corrector=corrector[:max_string_size],
         conversation_id=conversation_id,
         created_at=created_at,
     )
