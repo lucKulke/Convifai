@@ -121,7 +121,9 @@ class DataProvider {
   }
 
   static async fetch_available_languages() {
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/available_languages`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai_routes/available_languages`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -227,7 +229,7 @@ class DataProvider {
   static async update_conversation_title(conversation_id) {
     const apiUrl = `${
       import.meta.env.VITE_BACKEND_URI
-    }/ai/summarise_conversation`;
+    }/ai_routes/summarise_conversation`;
     const requestData = { conversation_id: conversation_id };
 
     try {
@@ -256,7 +258,9 @@ class DataProvider {
   }
 
   static async update_conversation_picture(conversation_id) {
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/generate_image`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai_routes/generate_image`;
     const requestData = { conversation_id: conversation_id };
 
     try {
@@ -285,7 +289,9 @@ class DataProvider {
   }
 
   static async text_to_voice(text, language) {
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/text_to_voice`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai_routes/text_to_voice`;
     const requestData = { text: text, language: language };
     try {
       const response = await fetch(apiUrl, {
@@ -315,7 +321,9 @@ class DataProvider {
   static async voice_to_text(audioBlob) {
     const formData = new FormData();
     formData.append("audio", audioBlob, "audio.webm");
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/voice_to_text`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai_routes/voice_to_text`;
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -335,7 +343,9 @@ class DataProvider {
   }
 
   static async language_processing(textFromUser, id) {
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/language_processing`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/ai_routes/language_processing`;
     const requestData = { text: textFromUser, conversation_id: id };
     console.log(JSON.stringify(requestData));
     try {
@@ -363,7 +373,9 @@ class DataProvider {
   }
 
   static async save_iteration_data(iterationData, conversation_id) {
-    const apiUrl = `${import.meta.env.VITE_BACKEND_URI}/ai/iteration_end`;
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URI
+    }/user_data/iteration_end`;
     iterationData.conversation_id = conversation_id;
     const requestData = iterationData;
     try {
