@@ -8,7 +8,14 @@ from flask import jsonify
 import uuid
 import requests
 import os
-from .crud import add_conversation, get_conversations, get_conversation, get_iterations
+from .crud import (
+    add_conversation,
+    get_conversations,
+    get_conversation,
+    get_iterations,
+    add_iteration,
+)
+
 
 api_server = os.getenv("AIHUB")
 
@@ -119,3 +126,31 @@ def conversation_delete():
                 f"Conversation with ID {conversation_id} not found", status=404
             )
     return "no post method"
+
+
+@user_data.route("/iteration_end", methods=["POST", "OPTIONS"])
+@login_required
+def save_iteration_data():
+    if request.method == "POST":
+        data = json.loads(request.data)
+        conversation_id = data["conversation_id"]
+
+        add_iteration(
+            id=uuid.uuid4(),
+            user_id=current_user.id,
+            voice_to_text=data["user"],
+            interlocutor=data["interlocutor"],
+            corrector=data["corrector"],
+            conversation_id=conversation_id,
+            created_at=datetime.datetime.now(),
+        )
+
+        conversation = get_conversation(conversation_id)
+        if conversation:
+            conversation.title_updateable = 1
+            conversation.picture_updateable = 1
+
+        db.session.commit()
+
+        return "iteration data saved", 200
+    return "not a post method"

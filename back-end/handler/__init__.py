@@ -29,12 +29,12 @@ def create_app():
 
     db.init_app(app)
 
-    from .ai import ai
+    from .ai_routes import ai_routes
     from .auth import auth
     from .user_data import user_data
     from .images import images
 
-    app.register_blueprint(ai, url_prefix="/ai")
+    app.register_blueprint(ai_routes, url_prefix="/ai_routes")
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(user_data, url_prefix="/user_data")
     app.register_blueprint(images, url_prefix="/images")

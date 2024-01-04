@@ -8,13 +8,12 @@ import tempfile
 
 import uuid
 from . import db
-import datetime
-from .crud import get_conversation, get_iterations, add_iteration
+from .crud import get_conversation, get_iterations
 from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToText
 from .utilitys import AWS_S3
 
 
-ai = Blueprint("ai", __name__)
+ai_routes = Blueprint("ai_routes", __name__)
 api_server = os.getenv("AIHUB_URL")
 aws_s3 = AWS_S3(
     region=os.getenv("AWS_BUCKET_REGION"),
@@ -24,7 +23,7 @@ aws_s3 = AWS_S3(
 )
 
 
-@ai.route("/available_languages")
+@ai_routes.route("/available_languages")
 @login_required
 def available_languages():
     if request.method == "GET":
@@ -36,35 +35,7 @@ def available_languages():
     return "no get method"
 
 
-@ai.route("/iteration_end", methods=["POST", "OPTIONS"])
-@login_required
-def save_iteration_data():
-    if request.method == "POST":
-        data = json.loads(request.data)
-        conversation_id = data["conversation_id"]
-
-        add_iteration(
-            id=uuid.uuid4(),
-            user_id=current_user.id,
-            voice_to_text=data["user"],
-            interlocutor=data["interlocutor"],
-            corrector=data["corrector"],
-            conversation_id=conversation_id,
-            created_at=datetime.datetime.now(),
-        )
-
-        conversation = get_conversation(conversation_id)
-        if conversation:
-            conversation.title_updateable = 1
-            conversation.picture_updateable = 1
-
-        db.session.commit()
-
-        return "iteration data saved", 200
-    return "not a post method"
-
-
-@ai.route("/voice_to_text", methods=["POST"])
+@ai_routes.route("/voice_to_text", methods=["POST"])
 @login_required
 def voice_to_text():
     if request.method == "POST":
@@ -82,7 +53,7 @@ def voice_to_text():
     return "no post method", 201
 
 
-@ai.route("/text_to_voice", methods=["POST"])
+@ai_routes.route("/text_to_voice", methods=["POST"])
 def text_to_voice():
     if request.method == "POST":
         data = json.loads(request.data)
@@ -110,7 +81,7 @@ def text_to_voice():
     return "not a post method"
 
 
-@ai.route("/language_processing", methods=["POST"])
+@ai_routes.route("/language_processing", methods=["POST"])
 def language_processing():
     if request.method == "POST":
         user_id = current_user.id
@@ -129,7 +100,7 @@ def language_processing():
     return "not a post method"
 
 
-@ai.route("/summarise_conversation", methods=["POST"])
+@ai_routes.route("/summarise_conversation", methods=["POST"])
 @login_required
 def summarise_conversation():
     user_id = current_user.id
@@ -144,7 +115,7 @@ def summarise_conversation():
     return {"new_title": conversation.title}
 
 
-@ai.route("/generate_image", methods=["POST"])
+@ai_routes.route("/generate_image", methods=["POST"])
 @login_required
 def generate_image_for_conversation():
     if request.method == "POST":
