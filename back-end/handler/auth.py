@@ -10,8 +10,9 @@ from flask_login import (
     login_required,
     current_user,
 )
-import uuid
+import uuid, os
 from .crud import get_user, add_user
+
 
 auth = Blueprint("auth", __name__)
 
@@ -46,11 +47,9 @@ def login_status():
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
-    if request.method == "POST":
-        logout_user()
+    logout_user()
 
-        return Response("logged out", status=201)
-    return "no post method"
+    return Response("logged out", status=201)
 
 
 @auth.route("/sign_up", methods=["POST"])
