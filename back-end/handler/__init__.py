@@ -5,6 +5,7 @@ import os
 from os import path
 from flask_login import LoginManager
 from flask_cors import CORS
+from flask_caching import Cache
 
 
 class Base(DeclarativeBase):
@@ -12,10 +13,11 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
+cache = Cache()
+app = Flask(__name__)
 
 
 def create_app():
-    app = Flask(__name__)
     CORS(
         app,
         resources={r"/*": {"origins": os.getenv("FRONT_END_URL")}},
@@ -26,6 +28,14 @@ def create_app():
     app.config[
         "SQLALCHEMY_DATABASE_URI"
     ] = f'mysql+pymysql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
+
+    app.config["CACHE_TYPE"] = "filesystem"
+    app.config["CACHE_DIR"] = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "img", "cache"
+    )  # Adjust this to your desired cache directory
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 3600
+
+    cache.init_app(app)
 
     db.init_app(app)
 
@@ -52,4 +62,4 @@ def create_app():
     def load_user(id):
         return User.query.get(id)
 
-    return app
+    return app, cache

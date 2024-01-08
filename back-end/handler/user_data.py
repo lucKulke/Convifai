@@ -15,6 +15,7 @@ from .crud import (
     get_iterations,
     add_iteration,
 )
+from . import app, cache
 
 
 api_server = os.getenv("AIHUB")
@@ -110,13 +111,24 @@ def conversation_delete():
     conversation_to_delete = get_conversation(conversation_id=conversation_id)
 
     if conversation_to_delete:
+        remove_user_image(conversation_to_delete.picture)
         db.session.delete(conversation_to_delete)
+
         db.session.commit()
+
         return Response(
             f"Conversation with ID {conversation_id} was deleted!", status=201
         )
     else:
         return Response(f"Conversation with ID {conversation_id} not found", status=404)
+
+
+def remove_user_image(image_id):
+    try:
+        cache.delete(f"user_image_mapping:{image_id}")
+        print(f"image removed with mapping:{image_id}", flush=True)
+    except OSError as e:
+        app.logger.error(f"Error removing image file: {e}")
 
 
 @user_data.route("/iteration_end", methods=["POST"])
