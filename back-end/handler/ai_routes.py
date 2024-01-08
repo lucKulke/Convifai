@@ -112,13 +112,14 @@ def summarise_conversation():
 @ai_routes.route("/generate_image", methods=["POST"])
 @login_required
 def generate_image_for_conversation():
+    user_id = current_user.id
     data = json.loads(request.data)
     conversation_id = data.get("conversation_id")
     conversation = get_conversation(conversation_id=conversation_id)
     if conversation:
         description = conversation.title
 
-        picture_name = generate_new_image(description)
+        picture_name = generate_new_image(user_id, description)
 
         conversation.picture = picture_name
         conversation.picture_updateable = 0
@@ -129,11 +130,11 @@ def generate_image_for_conversation():
         return Response(f"Conversation with ID {conversation_id} not found", status=404)
 
 
-def generate_new_image(description):
+def generate_new_image(user_id, description):
     data = ImageGenerator(url=api_server).request(description=description)
 
     image_data = requests.get(data["url"])
-    picture_name = f"image_{uuid.uuid4()}.png"
+    picture_name = f"image_{str(user_id)}_{uuid.uuid4()}.png"
 
     success = aws_s3.upload_image(
         io.BytesIO(image_data.content),
@@ -158,11 +159,12 @@ def summarise(conversation_id, user_id, language):
 
 def request_for_summary(sections, language):
     token = 35
+    language_instruction = f"Respond in {language}."
 
     summarizer = {
         "name": "summarizer",
         "system_message": CONFIG["language_processing"]["instructions"]["summarizer"]
-        + f"Only use {language} for your response!",
+        + language_instruction,
         "sections": sections,
     }
 
@@ -196,9 +198,7 @@ def get_conversation_history(conversation_id, user_id):
 
 def api_request_language_processing(text, language, interlocutor_sections):
     token = 100
-    language_instruction = (
-        f"Ignore the language from the user! Only use {language} for your response!"
-    )
+    language_instruction = f"Respond in {language}."
 
     interlocutor = {
         "name": "interlocutor",
