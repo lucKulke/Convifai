@@ -9,26 +9,35 @@ import tempfile
 import uuid
 from . import db
 from .crud import get_conversation, get_iterations
-from .services import LanguageProcessing, TextToVoice, ImageGenerator, VoiceToText
+from .services import (
+    LanguageProcessor,
+    VoiceGenerator,
+    ImageGenerator,
+    SpeechRecogniser,
+)
 from .utilitys import AWS_S3
 
 from config import CONFIG
 
 
 ai_routes = Blueprint("ai_routes", __name__)
-api_server = os.getenv("AIHUB_URL")
 aws_s3 = AWS_S3(
     region=os.getenv("AWS_BUCKET_REGION"),
     bucket_name=os.getenv("AWS_BUCKET_NAME"),
     signature_version="v4",
     retries={"max_attempts": 10, "mode": "standard"},
 )
+api_server_url = os.getenv("AIHUB_URL")
+voice_generator = VoiceGenerator(url=api_server_url)
+speech_recogniser = SpeechRecogniser(url=api_server_url)
+image_generator = ImageGenerator(url=api_server_url)
+language_processor = LanguageProcessor(api_server_url)
 
 
 @ai_routes.route("/available_languages")
 @login_required
 def available_languages():
-    response = requests.get(f"{api_server}/text_to_voice/azure/available_voices")
+    response = requests.get(f"{api_server_url}/text_to_voice/azure/available_voices")
     if response.status_code == 200:
         return response.json()
     else:
@@ -43,10 +52,10 @@ def voice_to_text():
     if audio_file_size <= 0:
         return "audio_file empty"
 
-    response = VoiceToText(url=api_server).request(audio_file=audio_file)
+    response = speech_recogniser.request(audio_file=audio_file)
 
     json_response = response.json()
-    # Process the response as needed
+
     return json_response.get("whisper_result")
 
 
@@ -54,9 +63,7 @@ def voice_to_text():
 def text_to_voice():
     data = json.loads(request.data)
 
-    response = TextToVoice(url=api_server).request(
-        text=data["text"], language=data["language"]
-    )
+    response = voice_generator.request(text=data["text"], language=data["language"])
     if response.status_code == 200:
 
         def generate():
@@ -131,7 +138,7 @@ def generate_image_for_conversation():
 
 
 def generate_new_image(user_id, description):
-    data = ImageGenerator(url=api_server).request(description=description)
+    data = image_generator.request(description=description)
 
     image_data = requests.get(data["url"])
     picture_name = f"image_{str(user_id)}_{uuid.uuid4()}.png"
@@ -168,7 +175,7 @@ def request_for_summary(sections, language):
         "sections": sections,
     }
 
-    response = LanguageProcessing(url=api_server).request(
+    response = language_processor.request(
         token=token, model="gpt-3.5-turbo", instances=[summarizer]
     )
     return response
@@ -214,8 +221,9 @@ def api_request_language_processing(text, language, interlocutor_sections):
         "sections": [{"role": "user", "content": text}],
     }
 
-    return LanguageProcessing(api_server).request(
+    response = language_processor.request(
         token=token,
         model=CONFIG["language_processing"]["model"],
         instances=[interlocutor, corrector],
     )
+    return response

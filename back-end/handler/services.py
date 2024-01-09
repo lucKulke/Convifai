@@ -28,7 +28,7 @@ class AIHub:
         return f"{json_response.get('token_type')} {json_response.get('access_token')}"
 
 
-class LanguageProcessing(AIHub):
+class LanguageProcessor(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
@@ -64,7 +64,7 @@ class LanguageProcessing(AIHub):
         return response.json()
 
 
-class VoiceToText(AIHub):
+class SpeechRecogniser(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
@@ -93,7 +93,7 @@ class VoiceToText(AIHub):
         return response
 
 
-class TextToVoice(AIHub):
+class VoiceGenerator(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
