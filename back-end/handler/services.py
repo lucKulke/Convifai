@@ -75,13 +75,13 @@ class SpeechRecogniser(AIHub):
             "audiofile": (
                 audio_file.filename,
                 audio_file.stream,
-                f"{audio_file.content_type}",
+                audio_file.content_type,
             )
         }
 
         try:
             response = requests.post(
-                f"{self.url}/voice_to_text/whisper/?model=small&only_text=true&timeout=200",
+                f"{self.url}/voice_to_text/whisper/runpod_endpoint",
                 headers={"Authorization": auth_token},
                 # form fields
                 files=files,  # audio file
