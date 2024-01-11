@@ -92,7 +92,15 @@ function Conversation(props) {
 
         console.log("AudioBlob size: ", audioBlob.size);
         if (audioBlob.size < 5000) {
-          setRecordingError(true);
+          setRecordingError(
+            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
+          );
+          setRecording(false);
+          setRecordingStoped(false);
+        } else if (audioBlob.size > 9000000) {
+          setRecordingError(
+            "Audiofile to big! Release the recordbutton to stop recording."
+          );
           setRecording(false);
           setRecordingStoped(false);
         } else {
@@ -225,14 +233,7 @@ function Conversation(props) {
 
   return (
     <>
-      {recordingError && (
-        <Alert
-          text={
-            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
-          }
-          type={"fail"}
-        />
-      )}
+      {recordingError && <Alert text={recordingError} type={"fail"} />}
       {loggedIn ? (
         <>
           <Steps step1={recording} step2={processing} step3={aiSpeaking} />
