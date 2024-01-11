@@ -1,7 +1,7 @@
 import robot from "../assets/images/robot.png";
 import { AiFillDelete } from "react-icons/ai";
 import { HiOutlineRefresh } from "react-icons/hi";
-import { ImEnter } from "react-icons/im";
+import { IoMdChatboxes } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Conversation from "../sections/Conversation";
 import { useEffect, useState } from "react";
@@ -82,20 +82,20 @@ export default function Card(props) {
             <div className="w-1/3  h-10 flex justify-start">
               <Link to={`/conversation/${props.id}`}>
                 <button>
-                  <ImEnter className="h-7 w-7 hover:w-8 hover:h-8" />
+                  <IoMdChatboxes className="h-8 w-8 hover:w-9 hover:h-9" />
                 </button>
               </Link>
             </div>
             {pictureUpdateable == 1 && (
               <div className="w-1/3 h-10 flex justify-center">
                 <button onClick={() => newPicture(props.id, props.title)}>
-                  <HiOutlineRefresh className="h-7 w-7 hover:w-8 hover:h-8" />
+                  <HiOutlineRefresh className="h-8 w-8 hover:w-9 hover:h-9" />
                 </button>
               </div>
             )}
             <div className="w-1/3 h-10 flex justify-end">
               <button onClick={() => props.delete(props.id)}>
-                <AiFillDelete className="h-7 w-7 hover:w-8 hover:h-8" />
+                <AiFillDelete className="h-8 w-8 hover:w-9 hover:h-9" />
               </button>
             </div>
           </div>
