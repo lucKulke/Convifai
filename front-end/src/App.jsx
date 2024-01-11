@@ -7,6 +7,7 @@ import Login from "./sections/Login";
 import { Routes, Route } from "react-router-dom";
 import DataProvider from "./functions/DataProvider";
 import SignUp from "./sections/SignUp";
+import About from "./sections/About";
 
 function App() {
   useEffect(() => {
@@ -42,6 +43,7 @@ function App() {
           path="/sign_up"
           element={<SignUp setLoggedIn={setLoggedIn} loggedIn={loggedIn} />}
         />
+        <Route path="/about-me" element={<About />} />
         <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
     </main>
