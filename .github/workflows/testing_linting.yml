@@ -1,0 +1,58 @@
+name: TestingLinting
+
+run-name: CI (Testing Hub with pytest + linting with flake8)🧪
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+      ctms:
+        image: luckulke/aihub_ctms:latest
+        ports:
+          - 8003:8000
+
+    env:
+      DB_USERNAME: testuser
+      DB_PASSWORD: testpassword
+      DB_TYPE: PostgreSQL
+      DB_NAME: testdb
+      DB_PORT: 5432
+      DB_HOST: localhost
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: testing
+        run: echo "testing.."
+
+  linting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: linting
+        run: echo "linting"
