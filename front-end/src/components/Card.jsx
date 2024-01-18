@@ -1,9 +1,7 @@
-import robot from "../assets/images/robot.png";
 import { AiFillDelete } from "react-icons/ai";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { IoMdChatboxes } from "react-icons/io";
 import { Link } from "react-router-dom";
-import Conversation from "../sections/Conversation";
 import { useEffect, useState } from "react";
 import picture_loading from "../assets/images/picture_loading.gif";
 export default function Card(props) {
