@@ -2,7 +2,7 @@ import json
 import requests
 import os, io
 from pydub import AudioSegment
-import datetime
+from config import CONFIG
 
 TOKEN_MANAGEMENT_URL = os.getenv("TOKEN_MANAGEMENT_URL")
 AIHUB_CONFIG = {
@@ -28,7 +28,7 @@ class AIHub:
         return f"{json_response.get('token_type')} {json_response.get('access_token')}"
 
 
-class LanguageProcessing(AIHub):
+class LanguageProcessor(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
@@ -46,7 +46,6 @@ class LanguageProcessing(AIHub):
             }
 
         payload = json.dumps(payload)
-        # print(payload, flush=True)
         try:
             response = requests.post(
                 f"{self.url}/language_processing/chat_gpt",
@@ -65,7 +64,7 @@ class LanguageProcessing(AIHub):
         return response.json()
 
 
-class VoiceToText(AIHub):
+class SpeechRecogniser(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
@@ -76,13 +75,13 @@ class VoiceToText(AIHub):
             "audiofile": (
                 audio_file.filename,
                 audio_file.stream,
-                f"{audio_file.content_type}",
+                audio_file.content_type,
             )
         }
 
         try:
             response = requests.post(
-                f"{self.url}/voice_to_text/whisper/?model=small&only_text=true&timeout=200",
+                f"{self.url}/voice_to_text/whisper/runpod_endpoint",
                 headers={"Authorization": auth_token},
                 # form fields
                 files=files,  # audio file
@@ -94,7 +93,7 @@ class VoiceToText(AIHub):
         return response
 
 
-class TextToVoice(AIHub):
+class VoiceGenerator(AIHub):
     def __init__(self, url) -> None:
         self.url = url
 
@@ -124,7 +123,9 @@ class ImageGenerator(AIHub):
         auth_token = self.get_auth_token()
 
         payload = {
-            "description": description + ", cartoon style",
+            "description": description
+            + ", "
+            + CONFIG["image_generation"]["instructions"],
             "number_of_pictures": 1,
             "size": "512x512",
         }
@@ -137,6 +138,7 @@ class ImageGenerator(AIHub):
                 },
                 json=payload,
             )
+            print(f"response: {response}")
             response.raise_for_status()
         except requests.exceptions.RequestException as errex:
             print(f"error in {type(self).__name__} service: {errex}", flush=True)

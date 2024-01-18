@@ -1,4 +1,4 @@
-import { AiOutlineCheckCircle } from "react-icons/ai";
+import { CgClose } from "react-icons/cg";
 import { GrAdd } from "react-icons/gr";
 import SelectLanguage from "./SelectLanguage";
 import { useState } from "react";
@@ -22,13 +22,22 @@ function AddNewConversationButton(props) {
         )}
       </li>
       <li className="w-full flex justify-center">
-        <button
-          disabled={languageListVisible}
-          onClick={() => handleAddNewConversation()}
-          className="bg-yellow-500 disabled:bg-gray-400 hover:bg-yellow-400 flex active:bg-yellow-500 shadow-xl rounded-full h-16 w-16 justify-center items-center"
-        >
-          <GrAdd className="h-10 w-10" />
-        </button>
+        {languageListVisible ? (
+          <button
+            onClick={() => setLanguageListVisible(false)}
+            className="bg-red-500 disabled:bg-gray-400 hover:bg-red-400 flex active:bg-red-500 shadow-xl rounded-full h-16 w-16 justify-center items-center"
+          >
+            <CgClose className="h-10 w-10" />
+          </button>
+        ) : (
+          <button
+            disabled={languageListVisible}
+            onClick={() => handleAddNewConversation()}
+            className="bg-yellow-500 disabled:bg-gray-400 hover:bg-yellow-400 flex active:bg-yellow-500 shadow-xl rounded-full h-16 w-16 justify-center items-center"
+          >
+            <GrAdd className="h-10 w-10" />
+          </button>
+        )}
       </li>
     </ul>
   );

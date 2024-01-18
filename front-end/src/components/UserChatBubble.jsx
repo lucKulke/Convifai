@@ -10,8 +10,20 @@ function UserChatBubble(props) {
   const [listenCorrection, setListenCorrection] = useState(false);
 
   const handleCorrectorChatBubble = () => {
-    setCorrectionVisible((prev) => !prev);
-    setCorrectionNoticed(true);
+    const required = correction_required();
+    if (required) {
+      setCorrectionVisible((prev) => !prev);
+      setCorrectionNoticed(true);
+    }
+  };
+
+  const correction_required = () => {
+    const normalizeString = (str) =>
+      str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
+    return (
+      normalizeString(props.correctorText) != normalizeString(props.userText)
+    );
   };
 
   return (
@@ -28,7 +40,9 @@ function UserChatBubble(props) {
             <p className="font-mono text-left p-3">{props.userText}</p>
 
             <div className="relative">
-              <InfoPing noticed={correctionNoticed}></InfoPing>
+              {correction_required() && (
+                <InfoPing noticed={correctionNoticed}></InfoPing>
+              )}
             </div>
           </button>
         </li>
@@ -36,9 +50,8 @@ function UserChatBubble(props) {
           <li className="flex items-center">
             <CorrectionChatBubble
               onclick={props.listenToCorrection}
+              aiSpeaking={props.aiSpeaking}
               text={props.correctorText}
-              listenCorrection={listenCorrection}
-              setListenCorrection={setListenCorrection}
             />
           </li>
         )}

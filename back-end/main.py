@@ -2,7 +2,7 @@ from handler import create_app
 from werkzeug.exceptions import HTTPException
 import json
 
-app = create_app()
+app, cache = create_app()
 
 
 @app.errorhandler(HTTPException)

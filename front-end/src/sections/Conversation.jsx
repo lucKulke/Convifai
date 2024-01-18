@@ -7,7 +7,7 @@ import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState, useRef } from "react";
 import DataProvider from "../functions/DataProvider";
 import { Navigate, useParams } from "react-router-dom";
-import { AiFillWarning } from "react-icons/ai";
+import { AiFillSound, AiFillWarning } from "react-icons/ai";
 import VoiceAnimation from "../components/VoiceAnimation";
 import Alert from "../components/Alert";
 
@@ -92,7 +92,15 @@ function Conversation(props) {
 
         console.log("AudioBlob size: ", audioBlob.size);
         if (audioBlob.size < 5000) {
-          setRecordingError(true);
+          setRecordingError(
+            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
+          );
+          setRecording(false);
+          setRecordingStoped(false);
+        } else if (audioBlob.size > 9000000) {
+          setRecordingError(
+            "Audiofile to big! Release the recordbutton to stop recording."
+          );
           setRecording(false);
           setRecordingStoped(false);
         } else {
@@ -130,6 +138,7 @@ function Conversation(props) {
     setUserText(textFromUser);
     const languageProccessingResponse = await languageProccessing(
       textFromUser,
+      language,
       id
     );
     const textFromCorrector = languageProccessingResponse.corrector;
@@ -170,6 +179,7 @@ function Conversation(props) {
   const languageProccessing = async (textFromUser, conversation_id) => {
     const data = await DataProvider.language_processing(
       textFromUser,
+      language,
       conversation_id
     );
     setAiCorrectorText(data.corrector);
@@ -218,19 +228,12 @@ function Conversation(props) {
   };
 
   const handleListenToCorrection = (text) => {
-    convertTextToVoice(text);
+    convertTextToVoice(text, language);
   };
 
   return (
     <>
-      {recordingError && (
-        <Alert
-          text={
-            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
-          }
-          type={"fail"}
-        />
-      )}
+      {recordingError && <Alert text={recordingError} type={"fail"} />}
       {loggedIn ? (
         <>
           <Steps step1={recording} step2={processing} step3={aiSpeaking} />
@@ -262,6 +265,7 @@ function Conversation(props) {
             {historyVisible && (
               <ChatHistory
                 listenToCorrection={handleListenToCorrection}
+                aiSpeaking={aiSpeaking}
                 history={chatHistory}
               />
             )}

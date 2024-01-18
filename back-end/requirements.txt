@@ -1,0 +1,7 @@
+boto3
+aiohttp
+flask
+flask-login
+flask-session
+flask-sqlachemy
+sqlachemy
