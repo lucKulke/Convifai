@@ -1,13 +1,18 @@
-FROM python:3.11.7-bookworm
+FROM python:3.11.4
 
 WORKDIR /app
 
-COPY ./requirements.txt /app/
-COPY ./main.py /app/
-COPY ./handler /app/
-COPY ./config /app/
+COPY requirements.txt /app/
+
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY main.py /app/
+COPY ./handler /app/handler
+COPY ./config /app/config
+COPY ./img /app/img
 
 
-RUN pip install --no-cache-dir -r requirements.txt
+EXPOSE 8000
 
-CMD ["python", "main.py", "--host=0.0.0.0"]
+CMD ["python", "main.py"]
