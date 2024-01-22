@@ -1,7 +1,11 @@
 boto3
 aiohttp
 flask
+requests
+flask-cors
+flask-caching
 flask-login
 flask-session
-flask-sqlachemy
-sqlachemy
+flask-sqlalchemy
+sqlalchemy
+psycopg2
