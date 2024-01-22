@@ -1,7 +1,6 @@
 import json
 import requests
 import os, io
-from pydub import AudioSegment
 from config import CONFIG
 
 TOKEN_MANAGEMENT_URL = os.getenv("TOKEN_MANAGEMENT_URL")
