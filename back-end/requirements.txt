@@ -9,3 +9,4 @@ flask-session
 flask-sqlalchemy
 sqlalchemy
 psycopg2
+pyyaml
