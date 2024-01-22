@@ -27,11 +27,11 @@ def create_app():
     app.config["SESSION_TYPE"] = "filesystem"
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f'mysql+pymysql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
-
+    ] = f'{os.getenv("DB_TYPE")}://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
+    # mysql+pymysql
     app.config["CACHE_TYPE"] = "filesystem"
     app.config["CACHE_DIR"] = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "img", "cache"
+        os.path.dirname(os.path.abspath(__file__)), "..", "img_cache", "cache"
     )  # Adjust this to your desired cache directory
     app.config["CACHE_DEFAULT_TIMEOUT"] = 3600
 
