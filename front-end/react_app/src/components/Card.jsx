@@ -45,7 +45,7 @@ export default function Card(props) {
             <img src={picture_loading} alt="gif" />
           ) : (
             <img
-              src={`${import.meta.env.VITE_BACKEND_URI}/images/${picture}`}
+              src={`http://localhost:8000/images/${picture}`}
               alt="picture"
             />
           )}
