@@ -49,7 +49,7 @@ def create_app():
     app.register_blueprint(user_data, url_prefix="/user_data")
     app.register_blueprint(images, url_prefix="/images")
 
-    from .models import User, Conversation, Iteration
+    from .models import Users, Conversation, Iteration
 
     with app.app_context():
         db.create_all()
@@ -60,6 +60,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(id)
+        return Users.query.get(id)
 
     return app, cache

@@ -1,4 +1,4 @@
-from .models import Iteration, Conversation, User
+from .models import Iteration, Conversation, Users
 from . import db
 
 
@@ -49,11 +49,11 @@ def add_conversation(id, language, title, picture, user_id, created_at):
 
 
 def get_user(username):
-    return User.query.filter_by(username=username).first()
+    return Users.query.filter_by(username=username).first()
 
 
 def add_user(id, username, password):
-    new_user = User(
+    new_user = Users(
         id=id,
         username=username,
         password=password,

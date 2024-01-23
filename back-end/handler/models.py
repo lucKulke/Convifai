@@ -3,7 +3,7 @@ from . import db
 import uuid
 
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(
         db.String(36),
         primary_key=True,
@@ -24,8 +24,8 @@ class Conversation(db.Model):
     language = db.Column(db.String(150))
     title = db.Column(db.String(150))
     picture = db.Column(db.String(150))
-    picture_updateable = db.Column(db.Boolean, default=True)
-    title_updateable = db.Column(db.Boolean, default=True)
+    picture_updateable = db.Column(db.Integer)
+    title_updateable = db.Column(db.Integer)
     user_id = db.Column(db.String(36))
     created_at = db.Column(db.DateTime)
 
