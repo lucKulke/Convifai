@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  convifai_backend:
+    image: convifai_backend:1.0
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./back-end/backend-secrets-test.env
+
+  convifai_frontend:
+    image: convifai_frontend:1.0
+    ports:
+      - "5173:80"
+  convifai_ctms:
+    image: convifai_ctms:1.0
