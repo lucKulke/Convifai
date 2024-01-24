@@ -31,7 +31,9 @@ def create_app():
         sslmode = "?sslmode=require"
     app.config[
         "SQLALCHEMY_DATABASE_URI"
+
     ] = f'{os.getenv("DB_TYPE")}://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}{sslmode}'
+
     # mysql+pymysql
     app.config["CACHE_TYPE"] = "filesystem"
     app.config["CACHE_DIR"] = os.path.join(
