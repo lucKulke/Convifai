@@ -1,0 +1,29 @@
+name: Deploy Frontend
+run-name: CD (deploy to frontend-server) 🚀
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_SERVER }}@${{ secrets.IP_SERVER }} << 'EOF'
+            cd /home/luc/docker_compose_files/
+            docker compose down
+
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_backend:latest
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_ctms:latest
+            
+            docker compose pull
+            docker compose up -d
+          EOF

@@ -1,0 +1,52 @@
+name: Deploy Backend
+run-name: CD (deploy to backend-server) 🚀
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_BACKEND_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_BACKEND_SERVER }}@${{ secrets.IP_BACKEND_SERVER }} << 'EOF'
+            cd /home/luc/
+            mkdir -p ./env_files
+            cd env_files
+            rm app.env
+            echo "AIHUB_USERNAME=${{ secrets.AIHUB_USERNAME }}" >> ./app.env
+            echo "AIHUB_PASSWORD=${{ secrets.AIHUB_PASSWORD }}" >> ./app.env
+            echo "AIHUB_URL=${{ secrets.AIHUB_URL }}" >> ./app.env
+            echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> ./app.env
+            echo "FRONT_END_URL=${{ secrets.FRONT_END_URL }}" >> ./app.env
+            echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> ./app.env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./app.env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> ./app.env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./app.env
+            echo "DB_SSLMODE=${{ secrets.DB_SSLMODE }}" >> ./app.env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./app.env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./app.env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ./app.env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ./app.env
+            echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> ./app.env
+            echo "AWS_BUCKET_REGION=${{ secrets.AWS_BUCKET_REGION }}" >> ./app.env
+            
+            echo "TOKEN_MANAGEMENT_URL=http://ctms:8003/get_token" >> ./app.env
+
+            cd /home/luc/docker_compose_files/
+            docker compose down
+
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_backend:latest
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_ctms:latest
+            
+            docker compose pull
+            docker compose up -d
+          EOF
