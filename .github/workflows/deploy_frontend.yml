@@ -21,8 +21,8 @@ jobs:
             cd /home/luc/docker_compose_files/
             docker compose down
 
-            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_backend:latest
-            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_ctms:latest
+            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/convifai_frontend:latest
+            
             
             docker compose pull
             docker compose up -d
