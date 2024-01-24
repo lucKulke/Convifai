@@ -1,6 +1,6 @@
 class DataProvider {
   static async check_login_status() {
-    const apiUrl = `${import.meta.env.BACKEND_URL}/auth/login_status`; // Replace with your API endpoint
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/auth/login_status`; // Replace with your API endpoint
     try {
       const response = await fetch(apiUrl, {
         credentials: "include",
