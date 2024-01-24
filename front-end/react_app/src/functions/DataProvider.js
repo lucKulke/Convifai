@@ -1,6 +1,6 @@
 class DataProvider {
   static async check_login_status() {
-    const apiUrl = `http://localhost:8000/auth/login_status`; // Replace with your API endpoint
+    const apiUrl = `${import.meta.env.BACKEND_URL}/auth/login_status`; // Replace with your API endpoint
     try {
       const response = await fetch(apiUrl, {
         credentials: "include",
@@ -19,7 +19,7 @@ class DataProvider {
   }
 
   static async login(username, password) {
-    const apiUrl = `http://localhost:8000/auth/login`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/auth/login`;
     const requestData = {
       username: username,
       password: password,
@@ -50,7 +50,7 @@ class DataProvider {
   }
 
   static async sign_up(username, password) {
-    const apiUrl = `http://localhost:8000/auth/sign_up`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/auth/sign_up`;
     const requestData = {
       username: username,
       password: password,
@@ -78,7 +78,7 @@ class DataProvider {
   }
 
   static async logout() {
-    const apiUrl = `http://localhost:8000/auth/logout`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/auth/logout`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -95,7 +95,7 @@ class DataProvider {
   }
 
   static async fetch_conversations_data() {
-    const apiUrl = `http://localhost:8000/user_data/conversations`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/user_data/conversations`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -119,7 +119,9 @@ class DataProvider {
   }
 
   static async fetch_available_languages() {
-    const apiUrl = `http://localhost:8000/ai_routes/available_languages`;
+    const apiUrl = `${
+      import.meta.env.BACKEND_URL
+    }/ai_routes/available_languages`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -143,7 +145,7 @@ class DataProvider {
   }
 
   static async create_conversation(language, title, picture) {
-    const apiUrl = `http://localhost:8000/user_data/conversations/add`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/user_data/conversations/add`;
     const requestData = {
       language: language,
       title: title,
@@ -171,7 +173,9 @@ class DataProvider {
   }
 
   static async delete_conversation(conversation_id) {
-    const apiUrl = `http://localhost:8000/user_data/conversations/delete`;
+    const apiUrl = `${
+      import.meta.env.BACKEND_URL
+    }/user_data/conversations/delete`;
     const requestData = { id: conversation_id };
     try {
       const response = await fetch(apiUrl, {
@@ -194,7 +198,9 @@ class DataProvider {
   }
 
   static async fetch_conversation_data(conversation_id) {
-    const apiUrl = `http://localhost:8000/user_data/conversation/${conversation_id}`;
+    const apiUrl = `${
+      import.meta.env.BACKEND_URL
+    }/user_data/conversation/${conversation_id}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -217,7 +223,9 @@ class DataProvider {
   }
 
   static async update_conversation_title(conversation_id) {
-    const apiUrl = `http://localhost:8000/ai_routes/summarise_conversation`;
+    const apiUrl = `${
+      import.meta.env.BACKEND_URL
+    }/ai_routes/summarise_conversation`;
     const requestData = { conversation_id: conversation_id };
 
     try {
@@ -246,7 +254,7 @@ class DataProvider {
   }
 
   static async update_conversation_picture(conversation_id) {
-    const apiUrl = `http://localhost:8000/ai_routes/generate_image`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/ai_routes/generate_image`;
     const requestData = { conversation_id: conversation_id };
 
     try {
@@ -275,7 +283,7 @@ class DataProvider {
   }
 
   static async text_to_voice(text, language) {
-    const apiUrl = `http://localhost:8000/ai_routes/text_to_voice`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/ai_routes/text_to_voice`;
     const requestData = { text: text, language: language };
     try {
       const response = await fetch(apiUrl, {
@@ -305,7 +313,7 @@ class DataProvider {
   static async voice_to_text(audioBlob) {
     const formData = new FormData();
     formData.append("audio", audioBlob, "audio.webm");
-    const apiUrl = `http://localhost:8000/ai_routes/voice_to_text`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/ai_routes/voice_to_text`;
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -325,7 +333,9 @@ class DataProvider {
   }
 
   static async language_processing(textFromUser, language, id) {
-    const apiUrl = `http://localhost:8000/ai_routes/language_processing`;
+    const apiUrl = `${
+      import.meta.env.BACKEND_URL
+    }/ai_routes/language_processing`;
     const requestData = {
       text: textFromUser,
       conversation_id: id,
@@ -357,7 +367,7 @@ class DataProvider {
   }
 
   static async save_iteration_data(iterationData, conversation_id) {
-    const apiUrl = `http://localhost:8000/user_data/iteration_end`;
+    const apiUrl = `${import.meta.env.BACKEND_URL}/user_data/iteration_end`;
     iterationData.conversation_id = conversation_id;
     const requestData = iterationData;
     try {

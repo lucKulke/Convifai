@@ -13,11 +13,11 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.2
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_FRONTEND_PRIVATE_KEY }}
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_SERVER }}@${{ secrets.IP_SERVER }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_FRONTEND_SERVER }}@${{ secrets.IP_FRONTEND_SERVER }} << 'EOF'
             cd /home/luc/docker_compose_files/
             docker compose down
 
