@@ -7,12 +7,9 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+
 COPY main.py /app/
-COPY ./handler /app/handler
-COPY ./config /app/config
-COPY ./img /app/img
 
+EXPOSE 8003
 
-EXPOSE 8000
-
-CMD ["python", "main.py"]
+CMD ["uvicorn", "main:ctms", "--host", "0.0.0.0", "--port", "8003"]

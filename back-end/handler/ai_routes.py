@@ -141,7 +141,7 @@ def generate_new_image(user_id, description):
     data = image_generator.request(description=description)
 
     image_data = requests.get(data["url"])
-    picture_name = f"image_{str(user_id)}_{uuid.uuid4()}.png"
+    picture_name = f"image_{str(user_id)}_{str(uuid.uuid4())}.png"
 
     success = aws_s3.upload_image(
         io.BytesIO(image_data.content),

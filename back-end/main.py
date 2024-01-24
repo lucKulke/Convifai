@@ -21,4 +21,4 @@ def handle_exception(error):
 
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=True)  # for network test host="0.0.0.0"
+    app.run(port=8000, host="0.0.0.0")  # for network test host="0.0.0.0"

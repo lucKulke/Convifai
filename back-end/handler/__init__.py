@@ -27,11 +27,11 @@ def create_app():
     app.config["SESSION_TYPE"] = "filesystem"
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f'mysql+pymysql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
-
+    ] = f'{os.getenv("DB_TYPE")}://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
+    # mysql+pymysql
     app.config["CACHE_TYPE"] = "filesystem"
     app.config["CACHE_DIR"] = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "img", "cache"
+        os.path.dirname(os.path.abspath(__file__)), "..", "img_cache", "cache"
     )  # Adjust this to your desired cache directory
     app.config["CACHE_DEFAULT_TIMEOUT"] = 3600
 
@@ -49,7 +49,7 @@ def create_app():
     app.register_blueprint(user_data, url_prefix="/user_data")
     app.register_blueprint(images, url_prefix="/images")
 
-    from .models import User, Conversation, Iteration
+    from .models import Users, Conversation, Iteration
 
     with app.app_context():
         db.create_all()
@@ -60,6 +60,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(id)
+        return Users.query.get(id)
 
     return app, cache

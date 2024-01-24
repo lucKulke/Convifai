@@ -91,7 +91,7 @@ def conversation_add():
     picture = data["picture"]
 
     new_conversation = add_conversation(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         language=language,
         title=title,
         picture=picture,
@@ -138,7 +138,7 @@ def save_iteration_data():
     conversation_id = data["conversation_id"]
 
     add_iteration(
-        id=uuid.uuid4(),
+        id=str(uuid.uuid4()),
         user_id=current_user.id,
         voice_to_text=data["user"],
         interlocutor=data["interlocutor"],
