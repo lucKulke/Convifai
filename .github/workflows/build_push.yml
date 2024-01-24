@@ -35,7 +35,7 @@ jobs:
       - name: Add Backend Url for React app
         run: |
           cd front-end/react_app/
-          echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> ./.env
+          echo "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" >> ./.env
 
       - name: Build and push frontend
         uses: docker/build-push-action@v5
