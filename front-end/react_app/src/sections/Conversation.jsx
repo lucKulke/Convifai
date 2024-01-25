@@ -90,7 +90,6 @@ function Conversation(props) {
       recorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
-        console.log("AudioBlob size: ", audioBlob.size);
         if (audioBlob.size < 5000) {
           setRecordingError(
             "Audiofile empty! Press the recordbutton and hold it down to record your voice."
@@ -132,7 +131,6 @@ function Conversation(props) {
   };
 
   const startIteration = async (audioBlob) => {
-    console.log("audio size", audioBlob.size);
     setProcessing(true);
     const textFromUser = await convertVoiceToText(audioBlob);
     setUserText(textFromUser);

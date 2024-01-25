@@ -27,8 +27,6 @@ function SignUp(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-    console.log(username);
-    console.log(password);
 
     DataProvider.sign_up(username, password)
       .then((loggedIn) => {

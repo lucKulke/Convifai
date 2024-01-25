@@ -13,7 +13,6 @@ function Steps(props) {
     } else if (step1) {
       return "bg-red-700 animate-pulse";
     } else {
-      console.log("true");
       return "bg-gray-200";
     }
   };

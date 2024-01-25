@@ -24,7 +24,7 @@ class DataProvider {
       username: username,
       password: password,
     };
-    console.log(requestData); // Replace with your API endpoint
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -107,7 +107,7 @@ class DataProvider {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data);
+
         return data;
       }
       if (response.status === 201) {
@@ -133,7 +133,7 @@ class DataProvider {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data);
+
         return data;
       }
       if (response.status === 201) {
@@ -244,7 +244,7 @@ class DataProvider {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data.new_title);
+
         return data.new_title;
       }
       if (response.status === 201) {
@@ -275,7 +275,7 @@ class DataProvider {
 
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data.picture_name);
+
         return data.picture_name;
       }
       if (response.status === 201) {
@@ -351,7 +351,7 @@ class DataProvider {
       conversation_id: id,
       language: language,
     };
-    console.log(JSON.stringify(requestData));
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -393,7 +393,6 @@ class DataProvider {
       });
 
       if (response.status === 200) {
-        console.log("data saved");
         return true;
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);

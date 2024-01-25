@@ -27,8 +27,6 @@ function Login(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-    console.log(username);
-    console.log(password);
     DataProvider.login(username, password)
       .then((loggedIn) => {
         if (loggedIn === "wrong password") {
@@ -45,7 +43,6 @@ function Login(props) {
   };
 
   const handleButtonTouchStart = (event) => {
-    console.log("on touch");
     event.preventDefault();
     handleSubmit(event);
   };
