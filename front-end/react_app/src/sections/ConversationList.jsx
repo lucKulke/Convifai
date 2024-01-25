@@ -7,7 +7,6 @@ import { Navigate } from "react-router-dom";
 
 function ConversationList(props) {
   useEffect(() => {
-    console.log("mount conversationList");
     if (props.loggedIn) {
       DataProvider.fetch_conversations_data()
         .then((data) => {
@@ -45,7 +44,6 @@ function ConversationList(props) {
 
   const handleSelectLanguage = (language) => {
     addConversation(language);
-    console.log(language);
   };
 
   const addConversation = (language) => {
@@ -63,7 +61,7 @@ function ConversationList(props) {
         };
         const newArray = [...conversations, newConversation];
         setConversations(newArray);
-        console.log("conversations array", conversations);
+
         setConversationListChanged("created");
       })
       .catch((error) => {
@@ -80,7 +78,7 @@ function ConversationList(props) {
             conversation_id
           );
           setConversations(newArray);
-          console.log("conversations array", conversations);
+
           setConversationListChanged("deleted");
         }
       })
@@ -99,7 +97,7 @@ function ConversationList(props) {
     const newUrl = await DataProvider.update_conversation_picture(
       conversation_id
     );
-    console.log("new url");
+
     return newUrl;
   };
   const updateTitle = async (conversation_id) => {

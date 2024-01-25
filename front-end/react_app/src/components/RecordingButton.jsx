@@ -1,7 +1,8 @@
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
 function RecordingButton(props) {
   const handleContextMenu = (e) => {
-    e.preventDefault(); // Prevent the context menu from appearing
+    e.preventDefault();
+    e.stopPropagation(); // Prevent the context menu from appearing
   };
   return (
     <div className="w-full flex justify-center mt-2 mb-2 items-center">
@@ -9,6 +10,7 @@ function RecordingButton(props) {
         onMouseDown={props.onMouseDown}
         onMouseUp={props.onMouseUp}
         onTouchStart={props.onTouchStart}
+        onTouchMove={(e) => e.preventDefault()}
         onContextMenu={handleContextMenu} // Handle touch events on mobile devices
         onTouchEnd={props.onTouchEnd}
         disabled={props.disabled}
