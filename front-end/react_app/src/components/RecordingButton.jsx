@@ -10,7 +10,6 @@ function RecordingButton(props) {
         onMouseDown={props.onMouseDown}
         onMouseUp={props.onMouseUp}
         onTouchStart={props.onTouchStart}
-        onTouchMove={(e) => e.preventDefault()}
         onContextMenu={handleContextMenu} // Handle touch events on mobile devices
         onTouchEnd={props.onTouchEnd}
         disabled={props.disabled}
