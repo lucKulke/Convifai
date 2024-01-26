@@ -59,10 +59,10 @@ function RecordingButton(props) {
           onClick={handleRequestRecordingPermission} // Request permission on button
           click
           disabled={permissionGranted}
-          className="bg-blue-500 hover:bg-blue-400
-          px-4 py-2"
+          className=" border-black border-2 bg-blue-300 hover:bg-blue-200 animate-pulse
+          px-4 py-2 rounded-xl"
         >
-          Grant mic permission
+          Click me to grant mic permissions!
         </button>
       )}
     </div>
