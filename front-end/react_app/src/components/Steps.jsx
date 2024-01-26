@@ -32,7 +32,7 @@ function Steps(props) {
       <div
         className={`flex h-10 w-20 items-center justify-evenly rounded-xl border-2 ${
           step1 ? "border-black shadow-md" : "border-gray-200"
-        }  bg-white`}
+        } `}
       >
         <div className={`h-1/2 w-1/4 rounded-full ${handleStep1()}`}></div>
         <h1 className={`text-xl ${step1 ? "" : "text-gray-200"}`}>Rec</h1>
