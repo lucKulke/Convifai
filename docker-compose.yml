@@ -9,7 +9,7 @@ services:
       - ./back-end/backend-secrets-test.env
 
   convifai_frontend:
-    image: luckulke/convifai_frontend:latest
+    image: convifai_frontend_test:1.0
     ports:
       - "5173:80"
   convifai_ctms:
