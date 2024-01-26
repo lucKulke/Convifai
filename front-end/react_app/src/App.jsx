@@ -23,32 +23,30 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-    <div className="bg-white">
-      <main className="relative max-container">
-        <Navbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/conversation/:id"
-            element={<Conversation loggedIn={loggedIn} />}
-          />
-          <Route
-            path="/conversations"
-            element={<ConversationList loggedIn={loggedIn} />}
-          />
-          <Route
-            path="/login"
-            element={<Login setLoggedIn={setLoggedIn} loggedIn={loggedIn} />}
-          />
-          <Route
-            path="/sign_up"
-            element={<SignUp setLoggedIn={setLoggedIn} loggedIn={loggedIn} />}
-          />
-          <Route path="/about-me" element={<About />} />
-          <Route path="*" element={<h1>Not Found</h1>} />
-        </Routes>
-      </main>
-    </div>
+    <main className="relative max-container">
+      <Navbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/conversation/:id"
+          element={<Conversation loggedIn={loggedIn} />}
+        />
+        <Route
+          path="/conversations"
+          element={<ConversationList loggedIn={loggedIn} />}
+        />
+        <Route
+          path="/login"
+          element={<Login setLoggedIn={setLoggedIn} loggedIn={loggedIn} />}
+        />
+        <Route
+          path="/sign_up"
+          element={<SignUp setLoggedIn={setLoggedIn} loggedIn={loggedIn} />}
+        />
+        <Route path="/about-me" element={<About />} />
+        <Route path="*" element={<h1>Not Found</h1>} />
+      </Routes>
+    </main>
   );
 }
 

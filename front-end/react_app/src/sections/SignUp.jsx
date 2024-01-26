@@ -56,7 +56,7 @@ function SignUp(props) {
         </div>
       )}
       <div className="h-screen flex justify-center mt-[200px]">
-        <div className="bg-white h-[350px] w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
+        <div className="h-[350px] w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
           <ul className="space-y-[30px]">
             <li className="">
               <h1 className="navbarLink flex justify-center">
