@@ -30,9 +30,9 @@ function SignUp(props) {
 
     DataProvider.sign_up(username, password)
       .then((loggedIn) => {
-        if (loggedIn === "account exists already") {
+        if (typeof loggedIn === "string") {
           setError(loggedIn);
-        } else if (loggedIn === true) {
+        } else if (loggedIn === 201) {
           props.setLoggedIn(loggedIn);
         }
       })
