@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
 function RecordingButton(props) {
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const buttonRef = useRef(null);
 
   const handleRecordingPermissionStatus = async () => {
     const permissionStatus = await navigator.permissions.query({
@@ -33,22 +34,47 @@ function RecordingButton(props) {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent the context menu from appearing
   };
 
-  const onTouchMove = (e) => {
-    e.preventDefault(); // Prevent default touch move events
-  };
+  useEffect(() => {
+    const button = buttonRef.current;
+
+    if (button) {
+      const onTouchStart = (e) => {
+        e.preventDefault();
+        props.onTouchStart(e);
+      };
+
+      const onTouchEnd = (e) => {
+        e.preventDefault();
+        props.onTouchEnd(e);
+      };
+
+      const onTouchMove = (e) => {
+        e.preventDefault();
+      };
+
+      button.addEventListener("touchstart", onTouchStart, { passive: false });
+      button.addEventListener("touchend", onTouchEnd, { passive: false });
+      button.addEventListener("touchmove", onTouchMove, { passive: false });
+
+      return () => {
+        button.removeEventListener("touchstart", onTouchStart);
+        button.removeEventListener("touchend", onTouchEnd);
+        button.removeEventListener("touchmove", onTouchMove);
+      };
+    }
+  }, [props, buttonRef.current]);
+
   return (
     <div className="w-full flex justify-center mt-2 mb-2 items-center">
       {permissionGranted ? (
         <button
+          ref={buttonRef}
+          id={"recordingButton"}
           onMouseDown={props.onMouseDown}
           onMouseUp={props.onMouseUp}
-          onTouchStart={props.onTouchStart}
-          onTouchMove={onTouchMove}
-          onContextMenu={handleContextMenu} // Handle touch events on mobile devices
-          onTouchEnd={props.onTouchEnd}
+          onContextMenu={handleContextMenu} // Handle touch events (context menu) on chrome dev mobile view
           disabled={props.disabled}
           className="bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-400 rounded-full h-20 w-20 flex items-center justify-center active:animate-pulse active:ring-8 active:ring-white shadow-xl"
         >
