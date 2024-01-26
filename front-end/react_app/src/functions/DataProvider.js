@@ -68,7 +68,8 @@ class DataProvider {
       if (response.status === 201) {
         return true;
       } else if (response.status === 406) {
-        return "account exists already";
+        const responseText = await response.text();
+        return responseText;
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
