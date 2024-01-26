@@ -79,7 +79,8 @@ function SignUp(props) {
                   <input
                     value={password}
                     onChange={handlePasswordChange}
-                    type="text"
+                    type="password"
+                    name="password"
                     placeholder="Password"
                     className="input input-bordered w-full max-w-xs"
                   />
