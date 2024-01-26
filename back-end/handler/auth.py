@@ -54,6 +54,9 @@ def logout():
 
 @auth.route("/sign_up", methods=["POST"])
 def sign_up():
+    return Response(
+        "No more accounts can be registerd. Please contact the admin for more information..."
+    )
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
