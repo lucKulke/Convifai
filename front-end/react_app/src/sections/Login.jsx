@@ -84,8 +84,9 @@ function Login(props) {
                   <input
                     value={password}
                     onChange={handlePasswordChange}
-                    type="text"
+                    type="password"
                     placeholder="Password"
+                    name="password"
                     className="input input-bordered w-full max-w-xs"
                   />
                 </div>
