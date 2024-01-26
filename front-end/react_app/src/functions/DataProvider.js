@@ -66,7 +66,7 @@ class DataProvider {
       });
 
       if (response.status === 201) {
-        return true;
+        return 201;
       } else if (response.status === 406) {
         const responseText = await response.text();
         return responseText;
