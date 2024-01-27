@@ -200,6 +200,8 @@ function Conversation(props) {
       audioRef.current = audio;
 
       audio.play();
+      audio.pause();
+      audio.play();
       audio.addEventListener("ended", () => {
         setAiSpeaking(false);
         setRecordingStoped(false);
