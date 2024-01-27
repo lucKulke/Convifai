@@ -44,12 +44,9 @@ function RecordingButton(props) {
 
   const handleContextMenu = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent the context menu from appearing
+    // Prevent the context menu from appearing
   };
 
-  const onTouchMove = (e) => {
-    e.preventDefault(); // Prevent default touch move events
-  };
   return (
     <div className="w-full flex justify-center mt-2 mb-2 items-center">
       {permissionGranted ? (
