@@ -10,6 +10,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { AiFillSound, AiFillWarning } from "react-icons/ai";
 import VoiceAnimation from "../components/VoiceAnimation";
 import Alert from "../components/Alert";
+import { isMobile } from "react-device-detect";
 
 function Conversation(props) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -91,9 +92,15 @@ function Conversation(props) {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
 
         if (audioBlob.size < 5000) {
-          setRecordingError(
-            "Audiofile empty! Press the recordbutton and hold it down to record your voice."
-          );
+          let warningMessage = "Audiofile empty! ";
+          if (isMobile) {
+            warningMessage +=
+              "Press the button to start and again to stop the recording.";
+          } else {
+            warningMessage +=
+              "Press the recordbutton and hold it down to record your voice.";
+          }
+          setRecordingError(warningMessage);
           setRecording(false);
           setRecordingStoped(false);
         } else if (audioBlob.size > 9000000) {
