@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
+import { IoPlayOutline } from "react-icons/io5";
 import { isMobile } from "react-device-detect";
 function RecordingButton(props) {
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -46,22 +47,37 @@ function RecordingButton(props) {
     e.preventDefault();
     // Prevent the context menu from appearing
   };
+  const playAudio = () => {
+    props.playAudio(props.audioReady);
+  };
 
   return (
     <div className="w-full flex justify-center mt-2 mb-2 items-center">
       {permissionGranted ? (
         <>
           {mobileDevice ? (
-            <button
-              onTouchStart={handleRecordButtonOnMobile}
-              onContextMenu={handleContextMenu} // Handle touch events on mobile devices
-              disabled={props.disabled}
-              className={`${
-                recording ? "bg-red-500 animate-pulse" : "bg-yellow-500"
-              } disabled:bg-gray-400 rounded-full h-20 w-20 flex items-center justify-center shadow-xl`}
-            >
-              <MdOutlineRecordVoiceOver className="h-8 w-8" />
-            </button>
+            <>
+              {props.audioReady ? (
+                <button
+                  onTouchEnd={playAudio}
+                  onContextMenu={handleContextMenu} // Handle touch events on mobile devices
+                  className={`bg-green-600 rounded-full h-20 w-20 flex items-center justify-center shadow-xl active:ring-white active:ring-8 border-2`}
+                >
+                  <IoPlayOutline className="h-10 w-10" />
+                </button>
+              ) : (
+                <button
+                  onTouchStart={handleRecordButtonOnMobile}
+                  onContextMenu={handleContextMenu} // Handle touch events on mobile devices
+                  disabled={props.disabled}
+                  className={`${
+                    recording ? "bg-red-500 animate-pulse" : "bg-yellow-500"
+                  } disabled:bg-gray-400 rounded-full h-20 w-20 flex items-center justify-center shadow-xl`}
+                >
+                  <MdOutlineRecordVoiceOver className="h-8 w-8" />
+                </button>
+              )}
+            </>
           ) : (
             <button
               onMouseDown={props.onMouseDown}

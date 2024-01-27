@@ -176,9 +176,16 @@ function Conversation(props) {
     return text;
   };
 
+  const [audioReady, setAudioReady] = useState(false);
+
   const convertTextToVoice = async (text, language) => {
     const audioUrl = await DataProvider.text_to_voice(text, language);
-    playAudioBlob(audioUrl);
+    if (isMobile) {
+      setAudioReady(audioUrl);
+      setProcessing(false);
+    } else {
+      playAudioBlob(audioUrl);
+    }
   };
 
   const languageProccessing = async (textFromUser, conversation_id) => {
@@ -195,14 +202,13 @@ function Conversation(props) {
   const playAudioBlob = (audioUrl) => {
     if (audioUrl) {
       const audio = new Audio(audioUrl);
-      setAiSpeaking(true);
+      setAudioReady(false);
       setProcessing(false);
       audioRef.current = audio;
 
       audio.play();
-      if (isMobile) {
-        pauseAudio();
-      }
+      setAiSpeaking(true);
+
       audio.addEventListener("ended", () => {
         setAiSpeaking(false);
         setRecordingStoped(false);
@@ -257,6 +263,8 @@ function Conversation(props) {
             />
           ) : (
             <RecordingButton
+              audioReady={audioReady}
+              playAudio={playAudioBlob}
               onMouseDown={startRecording}
               onMouseUp={stopRecording}
               onTouchStart={startRecording} // Handle touch events on mobile devices
