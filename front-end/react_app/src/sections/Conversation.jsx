@@ -141,11 +141,7 @@ function Conversation(props) {
     setProcessing(true);
     const textFromUser = await convertVoiceToText(audioBlob);
     setUserText(textFromUser);
-    const languageProccessingResponse = await languageProccessing(
-      textFromUser,
-      language,
-      id
-    );
+    const languageProccessingResponse = await languageProccessing(textFromUser);
     const textFromCorrector = languageProccessingResponse.corrector;
     const textFromInterlocutor = languageProccessingResponse.interlocutor;
 
@@ -188,12 +184,13 @@ function Conversation(props) {
     }
   };
 
-  const languageProccessing = async (textFromUser, conversation_id) => {
+  const languageProccessing = async (textFromUser) => {
     const data = await DataProvider.language_processing(
       textFromUser,
       language,
-      conversation_id
+      id
     );
+
     setAiCorrectorText(data.corrector);
     setAiInterlocutorText(data.interlocutor);
     return { interlocutor: data.interlocutor, corrector: data.corrector };

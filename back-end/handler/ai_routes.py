@@ -60,6 +60,7 @@ def voice_to_text():
 
 
 @ai_routes.route("/text_to_voice", methods=["POST"])
+@login_required
 def text_to_voice():
     data = json.loads(request.data)
 
@@ -84,6 +85,7 @@ def text_to_voice():
 
 
 @ai_routes.route("/language_processing", methods=["POST"])
+@login_required
 def language_processing():
     user_id = current_user.id
     data = json.loads(request.data)
@@ -93,11 +95,12 @@ def language_processing():
     interlocutor_sections = get_conversation_history(
         conversation_id=conversation_id, user_id=user_id
     )
+    db.session.commit()
 
     interlocutor_sections.append({"role": "user", "content": str(text)})
 
     response = api_request_language_processing(text, language, interlocutor_sections)
-    print(response, flush=True)
+
     return response, 200
 
 
@@ -160,13 +163,13 @@ def summarise(conversation_id, user_id, language):
     )
 
     response = request_for_summary(sections, language)
-    print(response, flush=True)
+
     return response["summarizer"]["content"][:150]
 
 
 def request_for_summary(sections, language):
     token = 35
-    language_instruction = f"Respond in {language}."
+    language_instruction = f" Respond in {language}."
 
     summarizer = {
         "name": "summarizer",
@@ -200,12 +203,13 @@ def get_conversation_history(conversation_id, user_id):
                 "content": f"{iteration.interlocutor}",
             },
         )
+
     return sections
 
 
 def api_request_language_processing(text, language, interlocutor_sections):
     token = 100
-    language_instruction = f"Respond in {language}."
+    language_instruction = f" Respond in {language}."
 
     interlocutor = {
         "name": "interlocutor",
