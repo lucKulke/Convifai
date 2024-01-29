@@ -141,11 +141,7 @@ function Conversation(props) {
     setProcessing(true);
     const textFromUser = await convertVoiceToText(audioBlob);
     setUserText(textFromUser);
-    const languageProccessingResponse = await languageProccessing(
-      textFromUser,
-      language,
-      id
-    );
+    const languageProccessingResponse = await languageProccessing(textFromUser);
     const textFromCorrector = languageProccessingResponse.corrector;
     const textFromInterlocutor = languageProccessingResponse.interlocutor;
 
@@ -176,17 +172,25 @@ function Conversation(props) {
     return text;
   };
 
+  const [audioReady, setAudioReady] = useState(false);
+
   const convertTextToVoice = async (text, language) => {
     const audioUrl = await DataProvider.text_to_voice(text, language);
-    playAudioBlob(audioUrl);
+    if (isMobile) {
+      setAudioReady(audioUrl);
+      setProcessing(false);
+    } else {
+      playAudioBlob(audioUrl);
+    }
   };
 
-  const languageProccessing = async (textFromUser, conversation_id) => {
+  const languageProccessing = async (textFromUser) => {
     const data = await DataProvider.language_processing(
       textFromUser,
       language,
-      conversation_id
+      id
     );
+
     setAiCorrectorText(data.corrector);
     setAiInterlocutorText(data.interlocutor);
     return { interlocutor: data.interlocutor, corrector: data.corrector };
@@ -195,11 +199,13 @@ function Conversation(props) {
   const playAudioBlob = (audioUrl) => {
     if (audioUrl) {
       const audio = new Audio(audioUrl);
-      setAiSpeaking(true);
+      setAudioReady(false);
       setProcessing(false);
       audioRef.current = audio;
 
       audio.play();
+      setAiSpeaking(true);
+
       audio.addEventListener("ended", () => {
         setAiSpeaking(false);
         setRecordingStoped(false);
@@ -254,6 +260,8 @@ function Conversation(props) {
             />
           ) : (
             <RecordingButton
+              audioReady={audioReady}
+              playAudio={playAudioBlob}
               onMouseDown={startRecording}
               onMouseUp={stopRecording}
               onTouchStart={startRecording} // Handle touch events on mobile devices

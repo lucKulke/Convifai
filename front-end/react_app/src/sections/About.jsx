@@ -8,11 +8,9 @@ function About(props) {
               <div className="ml-1">
                 <h2 className="navbarLink">About Me</h2>
                 <p>
-                  Hi, I'm Lucas, a passionate junior developer. This is my
-                  personal project, and I'm excited to share it with you! Hi,
-                  I'm Lucas, a junior developer passionate about building web
-                  applications. I created this project to learn more about the
-                  React.js and Flask frameworks, which I used to build this
+                  Hi, I'm Lucas, a junior developer passionate about building
+                  web applications. I created this project to learn more about
+                  the React.js and Flask frameworks, which I used to build this
                   application. I'm excited to share it with you!
                 </p>
                 <h3 className="text-bold mt-3 mb-1">Links to my:</h3>
