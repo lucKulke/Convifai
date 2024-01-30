@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
 function SignUp(props) {
-  const [username, setUsername] = useState(""); // State to hold the input value
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  if (props.loggedIn) {
+    navigate("/conversations");
+    return null;
+  }
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -34,6 +40,7 @@ function SignUp(props) {
           setError(loggedIn);
         } else if (loggedIn === 201) {
           props.setLoggedIn(loggedIn);
+          navigate("/conversations");
         }
       })
       .catch((error) => {
@@ -43,7 +50,6 @@ function SignUp(props) {
 
   return (
     <>
-      {props.loggedIn && <Navigate to="/conversations" />}
       {error && (
         <div className="flex justify-center w-full">
           <div

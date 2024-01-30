@@ -3,9 +3,13 @@ import AddNewConversationButton from "../components/AddNewConversationButton";
 import { useEffect, useState } from "react";
 import Alert from "../components/Alert";
 import DataProvider from "../functions/DataProvider";
-import { Navigate } from "react-router-dom";
+
+import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function ConversationList(props) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (props.loggedIn) {
       DataProvider.fetch_conversations_data()
@@ -14,6 +18,7 @@ function ConversationList(props) {
         })
         .catch((error) => {
           console.error("Error:", error);
+          return redirect("/login");
         });
 
       DataProvider.fetch_available_languages()
@@ -22,9 +27,16 @@ function ConversationList(props) {
         })
         .catch((error) => {
           console.error("Error:", error);
+          return redirect("/login");
         });
+    } else {
+      return redirect("/login");
     }
-  }, []);
+  }, [props.loggedIn, navigate]);
+
+  if (!props.loggedIn) {
+    return <p>Redirecting to login page...</p>;
+  }
 
   const [alert, setAlert] = useState(false);
   const [conversationListChanged, setConversationListChanged] = useState(null);
@@ -109,7 +121,6 @@ function ConversationList(props) {
 
   return (
     <>
-      {!props.loggedIn && <Navigate to="/login" />}
       <section className="max-container">
         <div className="flex justify-center w-full">
           <div

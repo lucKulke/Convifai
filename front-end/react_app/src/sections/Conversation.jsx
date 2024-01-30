@@ -6,40 +6,31 @@ import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState, useRef } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { AiFillSound, AiFillWarning } from "react-icons/ai";
 import VoiceAnimation from "../components/VoiceAnimation";
 import Alert from "../components/Alert";
 import { isMobile } from "react-device-detect";
 
 function Conversation(props) {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [chatHistory, setChatHistory] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const response = DataProvider.check_login_status()
-      .then((loggedIn) => {
-        setLoggedIn(loggedIn);
-        get_conversation_data();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
-    if (response == true) {
+    if (props.loggedIn) {
+      DataProvider.fetch_conversation_data(id)
+        .then((data) => {
+          setChatHistory(data.history);
+          setLanguage(data.language);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          return redirect("/login");
+        });
+    } else {
+      return redirect("/login");
     }
-  }, []);
-
-  const get_conversation_data = () => {
-    DataProvider.fetch_conversation_data(id)
-      .then((data) => {
-        setChatHistory(data.history);
-        setLanguage(data.language);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  }, [props.loggedIn, navigate]);
 
   const [language, setLanguage] = useState("");
   const [userText, setUserText] = useState("User Text");
@@ -59,6 +50,9 @@ function Conversation(props) {
   const [recordingError, setRecordingError] = useState(false);
 
   const [historyVisible, sethistoryVisible] = useState(false);
+  const [operationInstruction, setOperationInstruction] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(false);
 
   const handleHistoryButton = () => {
     sethistoryVisible((prev) => !prev);
@@ -72,7 +66,14 @@ function Conversation(props) {
     }
   }, [recordingError]);
 
+  useEffect(() => {
+    if (permissionGranted === true) {
+      setOperationInstruction(true);
+    }
+  }, [permissionGranted]);
+
   const startRecording = async () => {
+    setOperationInstruction(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setMediaStream(stream);
@@ -172,8 +173,6 @@ function Conversation(props) {
     return text;
   };
 
-  const [audioReady, setAudioReady] = useState(false);
-
   const convertTextToVoice = async (text, language) => {
     const audioUrl = await DataProvider.text_to_voice(text, language);
     if (isMobile) {
@@ -245,13 +244,15 @@ function Conversation(props) {
   return (
     <>
       {recordingError && <Alert text={recordingError} type={"fail"} />}
-      {loggedIn ? (
+      {props.loggedIn ? (
         <>
           <Steps step1={recording} step2={processing} step3={aiSpeaking} />
           <InputOutputFields
+            operationInstruction={operationInstruction}
             userInput={userText}
             aiOutput={aiInterlocutorText}
           />
+
           {aiSpeaking ? (
             <VoiceAnimation
               pause_audio={pauseAudio}
@@ -260,6 +261,8 @@ function Conversation(props) {
             />
           ) : (
             <RecordingButton
+              permissionGranted={permissionGranted}
+              setPermissionGranted={setPermissionGranted}
               audioReady={audioReady}
               playAudio={playAudioBlob}
               onMouseDown={startRecording}
@@ -272,6 +275,7 @@ function Conversation(props) {
 
           <div>
             <HistoryButton
+              operationInstruction={operationInstruction}
               historyVisible={historyVisible}
               onclick={handleHistoryButton}
             />
