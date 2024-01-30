@@ -1,4 +1,52 @@
 class DataProvider {
+  static async global_authentication_status() {
+    const apiUrl = `${
+      import.meta.env.VITE_BACKEND_URL
+    }/global_authentication_status`;
+    try {
+      const response = await fetch(apiUrl, {
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        return true;
+      } else if (response.status === 401) {
+        return false;
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
+  static async global_authentication(password) {
+    const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/global_authentication`;
+    const requestData = new URLSearchParams();
+    requestData.append("password", password);
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: requestData,
+      });
+
+      if (response.status === 200) {
+        return true;
+      } else if (response.status === 401) {
+        return false;
+      } else {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Error fetching data: ${error.message}`);
+    }
+  }
+
   static async check_login_status() {
     const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/auth/login_status`; // Replace with your API endpoint
     try {

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response, session, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 import os
@@ -66,5 +66,21 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return Users.query.get(id)
+
+    @app.route("/global_authentication_status", methods=["GET"])
+    def check_global_auth_status():
+        if "authenticated" in session and session["authenticated"]:
+            return Response(response="authenticated", status=200)
+        else:
+            return Response(response="not authenticated", status=401)
+
+    @app.route("/global_authentication", methods=["POST"])
+    def global_auth():
+        password = request.form.get("password")
+        if password == os.getenv("GLOABAL_PASSWORD"):
+            session["authenticated"] = True
+            return Response(response="successfully authenticated", status=200)
+        else:
+            return Response(response="wrong password", status=401)
 
     return app, cache
