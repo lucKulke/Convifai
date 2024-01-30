@@ -3,7 +3,6 @@ import { MdOutlineRecordVoiceOver } from "react-icons/md";
 import { IoPlayOutline } from "react-icons/io5";
 import { isMobile } from "react-device-detect";
 function RecordingButton(props) {
-  const [permissionGranted, setPermissionGranted] = useState(false);
   const [mobileDevice, setMobileDevice] = useState(isMobile);
   const [recording, setRecording] = useState(false);
   const checkRecordingPermissionStatus = async () => {
@@ -11,9 +10,9 @@ function RecordingButton(props) {
       name: "microphone",
     });
     if (permissionStatus.state === "granted") {
-      setPermissionGranted(true);
+      props.setPermissionGranted(true);
     } else {
-      setPermissionGranted(false);
+      props.setPermissionGranted(false);
     }
   };
 
@@ -23,10 +22,10 @@ function RecordingButton(props) {
       stream.getTracks().forEach((track) => track.stop());
 
       console.log("Recording permission granted");
-      setPermissionGranted(true);
+      props.setPermissionGranted(true);
     } catch (error) {
       console.error("Recording permission denied");
-      setPermissionGranted(false);
+      props.setPermissionGranted(false);
     }
   };
 
@@ -53,7 +52,7 @@ function RecordingButton(props) {
 
   return (
     <div className="w-full flex justify-center mt-2 mb-2 items-center">
-      {permissionGranted ? (
+      {props.permissionGranted ? (
         <>
           {mobileDevice ? (
             <>
@@ -93,7 +92,6 @@ function RecordingButton(props) {
       ) : (
         <button
           onClick={handleRequestRecordingPermission} // Request permission on button
-          disabled={permissionGranted}
           className=" border-black border-2 bg-blue-300 hover:bg-blue-200 animate-pulse
           px-4 py-2 rounded-xl"
         >
