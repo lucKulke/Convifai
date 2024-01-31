@@ -36,7 +36,8 @@ jobs:
         run: |
           cd front-end/react_app/
           echo "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" >> ./.env
-
+          echo "VITE_IMPRESSUM_NAME=${{ secrets.IMPRESSUM_NAME }}" >> ./.env
+          echo "VITE_IMPRESSUM_EMAIL=${{ secrets.IMPRESSUM_EMAIL }}" >> ./.env
       - name: Build and push frontend
         uses: docker/build-push-action@v5
         with:
