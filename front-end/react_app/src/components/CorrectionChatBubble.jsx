@@ -1,13 +1,10 @@
+import { useEffect, useState } from "react";
 import { PiSpeakerNoneLight } from "react-icons/pi";
 import { PiSpeakerHighLight } from "react-icons/pi";
 function CorrectionChatBubble(props) {
   const handleListenToCorrectionButton = async (text) => {
     props.onclick(text);
   };
-
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 
   return (
     <>
