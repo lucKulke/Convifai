@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
 function Login(props) {
-  const [username, setUsername] = useState(""); // State to hold the input value
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  if (props.loggedIn) {
+    navigate("/conversations");
+    return null;
+  }
 
   useEffect(() => {
     if (error) {
@@ -35,6 +41,7 @@ function Login(props) {
           setError("No such accout registerd, need to sign up first!");
         } else if (loggedIn === true) {
           props.setLoggedIn(loggedIn);
+          navigate("/conversations");
         }
       })
       .catch((error) => {
@@ -48,7 +55,6 @@ function Login(props) {
   };
   return (
     <>
-      {props.loggedIn && <Navigate to="/conversations" />}
       {error && (
         <div className="flex justify-center w-full">
           <div
@@ -56,7 +62,7 @@ function Login(props) {
               alert ? "opacity-100 visible" : "opacity-0 invisible"
             } transition-opacity duration-300 ease-in-out fixed top-0 z-50 p-4`}
           >
-            <Alert text={`Error,${error}`} type={"fail"}></Alert>
+            <Alert text={`Error: ${error}`} type={"fail"}></Alert>
           </div>
         </div>
       )}

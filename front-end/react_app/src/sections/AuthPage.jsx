@@ -1,27 +1,10 @@
 import React, { useEffect, useState } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate, useNavigate } from "react-router";
 import Alert from "../components/Alert";
-import { Link } from "react-router-dom";
 
-function SignUp(props) {
-  const [username, setUsername] = useState("");
+const AuthPage = (props) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
-
-  if (props.loggedIn) {
-    navigate("/conversations");
-    return null;
-  }
-
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
 
   useEffect(() => {
     if (error) {
@@ -33,14 +16,12 @@ function SignUp(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-
-    DataProvider.sign_up(username, password)
-      .then((loggedIn) => {
-        if (typeof loggedIn === "string") {
-          setError(loggedIn);
-        } else if (loggedIn === 201) {
-          props.setLoggedIn(loggedIn);
-          navigate("/conversations");
+    DataProvider.global_authentication(password)
+      .then((auth_status) => {
+        if (auth_status === true) {
+          props.setGlobalAuth(true);
+        } else if (auth_status === false) {
+          setError("Wrong Password! Please try again.");
         }
       })
       .catch((error) => {
@@ -48,8 +29,17 @@ function SignUp(props) {
       });
   };
 
+  const handleButtonTouchStart = (event) => {
+    event.preventDefault();
+    handleSubmit(event);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
   return (
-    <>
+    <div>
       {error && (
         <div className="flex justify-center w-full">
           <div
@@ -61,39 +51,30 @@ function SignUp(props) {
           </div>
         </div>
       )}
-      <div className="h-screen flex justify-center mt-[200px]">
-        <div className="h-[350px] w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
-          <ul className="space-y-[30px]">
-            <li className="">
-              <h1 className="navbarLink flex justify-center">
-                Sign up to Convifai
+      <div className="flex items-center justify-center h-screen">
+        <div>
+          <ul className="space-x-3">
+            <li>
+              <h1 className="text-center navbarLink text-1xl mb-10">
+                This is a private project.
               </h1>
             </li>
             <li>
               <form onSubmit={handleSubmit}>
-                <div className="mt-3 mb-3">
-                  <input
-                    value={username}
-                    onChange={handleUsernameChange}
-                    type="text"
-                    placeholder="Username"
-                    className="input input-bordered w-full max-w-xs"
-                  />
-                </div>
-
-                <div className="mt-3 mb-3">
+                <div className="mt-3">
                   <input
                     value={password}
                     onChange={handlePasswordChange}
                     type="password"
-                    name="password"
                     placeholder="Password"
+                    name="password"
                     className="input input-bordered w-full max-w-xs"
                   />
                 </div>
                 <div className="flex mt-3 justify-center p-2">
                   <button
                     type="submit"
+                    onTouchStart={handleButtonTouchStart}
                     className="bg-yellow-500 active:bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-semibold rounded-full ml-2 py-2 px-6 mt-6 transition duration-300"
                   >
                     Submit
@@ -101,18 +82,11 @@ function SignUp(props) {
                 </div>
               </form>
             </li>
-            <li>
-              <div className="flex justify-center">
-                <Link to="/login">
-                  <p className="text-blue-700">Login</p>
-                </Link>
-              </div>
-            </li>
           </ul>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
 
-export default SignUp;
+export default AuthPage;

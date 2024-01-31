@@ -38,7 +38,7 @@ jobs:
             echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ./app.env
             echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> ./app.env
             echo "AWS_BUCKET_REGION=${{ secrets.AWS_BUCKET_REGION }}" >> ./app.env
-            
+            echo "GLOABAL_PASSWORD=${{ secrets.GLOABAL_PASSWORD }}" >> ./app.env
             echo "TOKEN_MANAGEMENT_URL=http://ctms:8003/get_token" >> ./app.env
 
             cd /home/luc/docker_compose_files/
