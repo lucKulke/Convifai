@@ -35,6 +35,9 @@ export default function Card(props) {
     if (titleUpdateable === 1) {
       creatingNewTitle(props.id);
     }
+    if (pictureUpdateable === 1) {
+      newPicture(props.id, props.title);
+    }
   }, [titleUpdateable]);
 
   return (
@@ -84,13 +87,6 @@ export default function Card(props) {
                 </button>
               </Link>
             </div>
-            {pictureUpdateable == 1 && (
-              <div className="w-1/3 h-10 flex justify-center">
-                <button onClick={() => newPicture(props.id, props.title)}>
-                  <HiOutlineRefresh className="h-8 w-8 hover:w-9 hover:h-9" />
-                </button>
-              </div>
-            )}
             <div className="w-1/3 h-10 flex justify-end">
               <button onClick={() => props.delete(props.id)}>
                 <AiFillDelete className="h-8 w-8 hover:w-9 hover:h-9" />
