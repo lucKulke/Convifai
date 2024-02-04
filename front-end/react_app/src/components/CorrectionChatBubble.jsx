@@ -2,9 +2,20 @@ import { useEffect, useState } from "react";
 import { PiSpeakerNoneLight } from "react-icons/pi";
 import { PiSpeakerHighLight } from "react-icons/pi";
 function CorrectionChatBubble(props) {
+  const [listenToCorrection, setListenToCorrection] = useState(false);
+
   const handleListenToCorrectionButton = async (text) => {
+    setListenToCorrection(true);
     props.onclick(text);
   };
+
+  useEffect(() => {
+    if (props.aiSpeaking) {
+      setListenToCorrection(true);
+    } else {
+      setListenToCorrection(false);
+    }
+  }, [props.aiSpeaking]);
 
   return (
     <>
@@ -14,7 +25,7 @@ function CorrectionChatBubble(props) {
         </div>
       </div>
       <button
-        disabled={props.aiSpeaking}
+        disabled={listenToCorrection}
         className="p-2"
         onClick={() => handleListenToCorrectionButton(props.text)}
       >
