@@ -4,6 +4,8 @@ import { IoMdChatboxes } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import picture_loading from "../assets/images/picture_loading.gif";
+import DataProvider from "../functions/DataProvider";
+
 export default function Card(props) {
   const [picture, setPicture] = useState(props.picture);
   const [pictureUpdateable, setPictureUpdateable] = useState(
@@ -14,26 +16,43 @@ export default function Card(props) {
   );
   const [title, setTitle] = useState(props.title);
 
-  const newPicture = async (conversation_id, text) => {
+  const newPicture = (conversation_id) => {
     setPictureUpdateable(2);
-    const newUrl = await props.refreshPicture(conversation_id, text);
-    setPicture(newUrl);
-    console.log("picture updated");
-    setPictureUpdateable(0);
+    DataProvider.update_conversation_picture(conversation_id)
+      .then((newUrl) => {
+        setPicture(newUrl);
+        console.log("picture updated");
+        setPictureUpdateable(0);
+        props.setCardsUpdating(false);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setPictureUpdateable(0);
+        props.setCardsUpdating(false);
+      });
   };
 
-  const creatingNewTitle = async (conversation_id) => {
+  const creatingNewTitle = (conversation_id) => {
+    props.setCardsUpdating(true);
     setTitleUpdateable(2);
-
-    const title = await props.update_title(conversation_id);
-    setTitle(title);
-    console.log("title updated", title);
-    setTitleUpdateable(0);
+    DataProvider.update_conversation_title(conversation_id)
+      .then((title) => {
+        setTitle(title);
+        console.log("title updated", title);
+        setTitleUpdateable(0);
+      })
+      .catch((error) => {
+        setTitleUpdateable(0);
+        console.error("Error:", error);
+      });
   };
 
   useEffect(() => {
     if (titleUpdateable === 1) {
       creatingNewTitle(props.id);
+    }
+    if (pictureUpdateable === 1) {
+      newPicture(props.id);
     }
   }, [titleUpdateable]);
 
@@ -84,13 +103,6 @@ export default function Card(props) {
                 </button>
               </Link>
             </div>
-            {pictureUpdateable == 1 && (
-              <div className="w-1/3 h-10 flex justify-center">
-                <button onClick={() => newPicture(props.id, props.title)}>
-                  <HiOutlineRefresh className="h-8 w-8 hover:w-9 hover:h-9" />
-                </button>
-              </div>
-            )}
             <div className="w-1/3 h-10 flex justify-end">
               <button onClick={() => props.delete(props.id)}>
                 <AiFillDelete className="h-8 w-8 hover:w-9 hover:h-9" />

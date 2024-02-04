@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, redirect, useNavigate } from "react-router-dom";
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
@@ -10,10 +10,11 @@ function Login(props) {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  if (props.loggedIn) {
-    navigate("/conversations");
-    return null;
-  }
+  useEffect(() => {
+    if (props.loggedIn) {
+      navigate("/conversations");
+    }
+  }, []);
 
   useEffect(() => {
     if (error) {
