@@ -18,7 +18,6 @@ function ConversationList(props) {
         })
         .catch((error) => {
           console.error("Error:", error);
-          return redirect("/login");
         });
 
       DataProvider.fetch_available_languages()
@@ -27,21 +26,17 @@ function ConversationList(props) {
         })
         .catch((error) => {
           console.error("Error:", error);
-          return redirect("/login");
         });
     } else {
       return redirect("/login");
     }
-  }, [props.loggedIn, navigate]);
-
-  if (!props.loggedIn) {
-    return <p>Redirecting to login page...</p>;
-  }
+  }, []);
 
   const [alert, setAlert] = useState(false);
   const [conversationListChanged, setConversationListChanged] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [languages, setLanguages] = useState([]);
+  const [cardsUpdating, setCardsUpdating] = useState(false);
 
   useEffect(() => {
     if (conversationListChanged) {
@@ -75,6 +70,7 @@ function ConversationList(props) {
         setConversations(newArray);
 
         setConversationListChanged("created");
+        navigate(`/conversation/${id}`);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -105,20 +101,6 @@ function ConversationList(props) {
     });
   }
 
-  const refreshConversationPicture = async (conversation_id) => {
-    const newUrl = await DataProvider.update_conversation_picture(
-      conversation_id
-    );
-
-    return newUrl;
-  };
-  const updateTitle = async (conversation_id) => {
-    const newTitle = await DataProvider.update_conversation_title(
-      conversation_id
-    );
-    return newTitle;
-  };
-
   return (
     <>
       <section className="max-container">
@@ -145,13 +127,13 @@ function ConversationList(props) {
               language={conversation.language}
               picture={conversation.picture}
               picture_updateable={conversation.picture_updateable}
-              refreshPicture={refreshConversationPicture}
-              update_title={updateTitle}
+              setCardsUpdating={setCardsUpdating}
             />
           ))}
           <AddNewConversationButton
             selectLanguage={handleSelectLanguage}
             languages={languages}
+            cardsUpdating={cardsUpdating}
           />
         </ul>
       </section>

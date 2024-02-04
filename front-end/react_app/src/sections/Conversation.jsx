@@ -54,6 +54,8 @@ function Conversation(props) {
   const [audioReady, setAudioReady] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
+  const [correctionAvailable, setCorrectionAvailable] = useState(false);
+
   const handleHistoryButton = () => {
     sethistoryVisible((prev) => !prev);
   };
@@ -73,6 +75,7 @@ function Conversation(props) {
   }, [permissionGranted]);
 
   const startRecording = async () => {
+    setCorrectionAvailable(false);
     setOperationInstruction(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -208,8 +211,6 @@ function Conversation(props) {
       audio.addEventListener("ended", () => {
         setAiSpeaking(false);
         setRecordingStoped(false);
-
-        setAiCorrectorText("");
       });
     }
   };
@@ -232,13 +233,11 @@ function Conversation(props) {
       audioRef.current.currentTime = 0;
       setAiSpeaking(false);
       setRecordingStoped(false);
-
-      setAiCorrectorText("");
     }
   };
 
-  const handleListenToCorrection = (text) => {
-    convertTextToVoice(text, language);
+  const handleListenToCorrection = async (text) => {
+    await convertTextToVoice(text, language);
   };
 
   return (
@@ -249,6 +248,11 @@ function Conversation(props) {
           <Steps step1={recording} step2={processing} step3={aiSpeaking} />
           <InputOutputFields
             operationInstruction={operationInstruction}
+            correctorText={aiCorrectorText}
+            aiSpeaking={aiSpeaking}
+            correctionAvailable={correctionAvailable}
+            setCorrectionAvailable={setCorrectionAvailable}
+            handleListenToCorrection={handleListenToCorrection}
             userInput={userText}
             aiOutput={aiInterlocutorText}
           />

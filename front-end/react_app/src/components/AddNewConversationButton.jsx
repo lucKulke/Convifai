@@ -31,7 +31,7 @@ function AddNewConversationButton(props) {
           </button>
         ) : (
           <button
-            disabled={languageListVisible}
+            disabled={props.cardsUpdating}
             onClick={() => handleAddNewConversation()}
             className="bg-yellow-500 disabled:bg-gray-400 hover:bg-yellow-400 flex active:bg-yellow-500 shadow-xl rounded-full h-16 w-16 justify-center items-center"
           >
