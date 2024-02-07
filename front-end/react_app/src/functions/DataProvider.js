@@ -264,9 +264,6 @@ class DataProvider {
       if (response.status === 200) {
         const data = await response.json();
         return data;
-      }
-      if (response.status === 201) {
-        return [];
       } else {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

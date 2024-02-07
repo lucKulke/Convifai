@@ -68,7 +68,7 @@ function InputOutputFields(props) {
                   onClick={handleCorrectionRequest}
                 >
                   <div className="overflow-y-auto max-sm:max-h-24 sm:max-h-20 lg:max-h-24 2xl:max-h-28 ">
-                    <p className="userInput">{props.userInput}</p>
+                    <p className="text-left">{props.userInput}</p>
                   </div>
                 </button>
               </>
