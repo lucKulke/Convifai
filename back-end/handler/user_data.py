@@ -28,10 +28,13 @@ user_data = Blueprint("user_data", __name__)
 def conversation(id_):
     user_id = current_user.id
     conversation_id = id_
+    conversation = get_conversation(conversation_id=conversation_id)
+
+    if not conversation:
+        return "Conversation not Found", 404
 
     interations = get_iterations(conversation_id=conversation_id, user_id=user_id)
     sorted_iterations = sorted(interations, key=lambda x: x.created_at)
-    conversation = get_conversation(conversation_id=conversation_id)
 
     response = {}
     history = []
@@ -47,11 +50,7 @@ def conversation(id_):
 
     response["history"] = history
     response["language"] = conversation.language
-    print(response, flush=True)
-    if not response:
-        return jsonify([]), 201
-    else:
-        return jsonify(response), 200
+    return jsonify(response), 200
 
 
 @user_data.route("/conversations", methods=["GET"])

@@ -1,13 +1,11 @@
 import InputOutputFields from "../components/InputOutputFields";
 import ChatHistory from "../components/ChatHistory";
-import Actions from "../components/Steps";
 import RecordingButton from "../components/RecordingButton";
 import Steps from "../components/Steps";
 import HistoryButton from "../components/HistoryButton";
 import { useEffect, useState, useRef } from "react";
 import DataProvider from "../functions/DataProvider";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { AiFillSound, AiFillWarning } from "react-icons/ai";
+import { useNavigate, useParams } from "react-router-dom";
 import VoiceAnimation from "../components/VoiceAnimation";
 import Alert from "../components/Alert";
 import { isMobile } from "react-device-detect";
@@ -25,12 +23,12 @@ function Conversation(props) {
         })
         .catch((error) => {
           console.error("Error:", error);
-          return redirect("/login");
+          navigate("/conversations");
         });
     } else {
-      return redirect("/login");
+      navigate("/conversations");
     }
-  }, [props.loggedIn, navigate]);
+  }, []);
 
   const [language, setLanguage] = useState("");
   const [userText, setUserText] = useState("User Text");
@@ -46,7 +44,6 @@ function Conversation(props) {
 
   const [mediaStream, setMediaStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
   const [recordingError, setRecordingError] = useState(false);
 
   const [historyVisible, sethistoryVisible] = useState(false);
