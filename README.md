@@ -6,7 +6,7 @@ Convifai is an AI-driven voice dialogue app utilizing speech recognition, langua
 
 **Frontend**:
 
-- React.js as frontend framework
+- React.js
 - Tailwind css for styling
 
 **Backend**:
@@ -15,4 +15,4 @@ Convifai is an AI-driven voice dialogue app utilizing speech recognition, langua
 - Fastapi for the centralized token management system
 - MySQL Database
 
-The Backend then communicates to my selfbuild AIHub to use the different AI services.
+The Backend uses the different ai services from my selfbuild AIHub ([GitHub](https://github.com/lucKulke/AIHub)).

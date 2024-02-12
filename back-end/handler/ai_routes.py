@@ -111,8 +111,8 @@ def summarise_conversation():
     data = json.loads(request.data)
     conversation_id = data["conversation_id"]
     conversation = get_conversation(conversation_id=conversation_id)
-
-    conversation.title = summarise(conversation.id, user_id, conversation.language)
+    new_title = summarise(conversation.id, user_id, conversation.language)
+    conversation.title = new_title
     conversation.title_updateable = 0
 
     db.session.commit()
@@ -129,8 +129,16 @@ def generate_image_for_conversation():
     if conversation:
         description = conversation.title
 
-        picture_name = generate_new_image(user_id, description)
+        conversation_language = conversation.language
+        if conversation_language != "English" or conversation_language != "German":
+            translated_description = translate_to(language="english", text=description)
+            print(
+                f"description : {description}\ntranslated_description : {translated_description}",
+                flush=True,
+            )
+            description = translated_description
 
+        picture_name = generate_new_image(user_id, description)
         conversation.picture = picture_name
         conversation.picture_updateable = 0
         db.session.commit()
@@ -209,7 +217,7 @@ def get_conversation_history(conversation_id, user_id):
 
 def api_request_language_processing(text, language, interlocutor_sections):
     token = 100
-    language_instruction = f" Respond in {language}."
+    language_instruction = f" Respond only in {language}."
 
     interlocutor = {
         "name": "interlocutor",
@@ -225,9 +233,26 @@ def api_request_language_processing(text, language, interlocutor_sections):
         "sections": [{"role": "user", "content": text}],
     }
 
+    print(f"interlocutor request payload: {interlocutor}", flush=True)
+
     response = language_processor.request(
         token=token,
         model=CONFIG["language_processing"]["model"],
         instances=[interlocutor, corrector],
     )
     return response
+
+
+def translate_to(language: str, text: str):
+    translator = {
+        "name": "translator",
+        "system_message": f"Translate the text to {language}",
+        "sections": [{"role": "user", "content": text}],
+    }
+
+    response = language_processor.request(
+        token=100,
+        model=CONFIG["language_processing"]["model"],
+        instances=[translator],
+    )
+    return response["translator"]["content"][:150]
