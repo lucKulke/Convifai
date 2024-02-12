@@ -37,7 +37,7 @@ language_processor = LanguageProcessor(api_server_url)
 @ai_routes.route("/available_languages")
 @login_required
 def available_languages():
-    response = requests.get(f"{api_server_url}/text_to_voice/azure/available_voices")
+    response = requests.get(f"{api_server_url}/text_to_voice/azure/available_languages")
     if response.status_code == 200:
         return response.json()
     else:
