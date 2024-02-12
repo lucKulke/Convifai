@@ -34,20 +34,24 @@ function Login(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-    DataProvider.login(username, password)
-      .then((loggedIn) => {
-        if (loggedIn === "wrong password") {
-          setError("Wrong password!");
-        } else if (loggedIn === "no registerd account") {
-          setError("No such accout registerd, need to sign up first!");
-        } else if (loggedIn === true) {
-          props.setLoggedIn(loggedIn);
-          navigate("/conversations");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    if (username.length > 0 && password.length > 0) {
+      DataProvider.login(username, password)
+        .then((loggedIn) => {
+          if (loggedIn === "wrong password") {
+            setError("Wrong password!");
+          } else if (loggedIn === "no registerd account") {
+            setError("No such accout registerd, need to sign up first!");
+          } else if (loggedIn === "logged in") {
+            props.setLoggedIn(loggedIn);
+            navigate("/conversations");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    } else {
+      setError("You can't submit blank credentials.");
+    }
   };
 
   const handleButtonTouchStart = (event) => {

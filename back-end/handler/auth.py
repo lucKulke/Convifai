@@ -54,10 +54,6 @@ def logout():
 
 @auth.route("/sign_up", methods=["POST"])
 def sign_up():
-    return Response(
-        "No more accounts can be registerd. Please contact the admin for more information...",
-        status=406,
-    )
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
@@ -65,7 +61,7 @@ def sign_up():
     user = get_user(username=username)
 
     if user:
-        return Response("you already have an account", status=406)
+        return Response("You already have an account", status=406)
     else:
         new_user = add_user(
             id=str(uuid.uuid4()),

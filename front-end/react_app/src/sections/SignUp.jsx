@@ -10,10 +10,11 @@ function SignUp(props) {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  if (props.loggedIn) {
-    navigate("/conversations");
-    return null;
-  }
+  useEffect(() => {
+    if (props.loggedIn) {
+      navigate("/conversations");
+    }
+  }, []);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -33,19 +34,22 @@ function SignUp(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the form from submitting and refreshing the page
-
-    DataProvider.sign_up(username, password)
-      .then((loggedIn) => {
-        if (typeof loggedIn === "string") {
-          setError(loggedIn);
-        } else if (loggedIn === 201) {
-          props.setLoggedIn(loggedIn);
-          navigate("/conversations");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    if (username.length > 0 && password.length > 0) {
+      DataProvider.sign_up(username, password)
+        .then((loggedIn) => {
+          if (loggedIn === "signed up") {
+            props.setLoggedIn(true);
+            navigate("/conversations");
+          } else {
+            setError(loggedIn);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    } else {
+      setError("You can't submit blank credentials.");
+    }
   };
 
   return (
@@ -63,7 +67,7 @@ function SignUp(props) {
       )}
       <div className="h-screen flex justify-center mt-[200px]">
         <div className="h-[350px] w-1/3 max-md:w-1/2 rounded-xl shadow-2xl border-2 border-gray-400 flex justify-center p-2">
-          <ul className="space-y-[30px]">
+          <ul className="space-y-[20px]">
             <li className="">
               <h1 className="navbarLink flex justify-center">
                 Sign up to Convifai

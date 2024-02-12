@@ -84,7 +84,7 @@ class DataProvider {
       });
 
       if (response.status === 201) {
-        return true;
+        return "logged in";
       } else if (response.status === 423) {
         return "wrong password";
       } else if (response.status === 406) {
@@ -114,7 +114,7 @@ class DataProvider {
       });
 
       if (response.status === 201) {
-        return 201;
+        return "signed up";
       } else if (response.status === 406) {
         const responseText = await response.text();
         return responseText;
